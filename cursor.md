@@ -2,22 +2,6 @@
 
 > Keywords: **MUST** / **NEVER** = mandatory. **SHOULD** = recommended unless there is a clear reason not to. **MAY** = optional.
 
-## Package Manager
-
-### Node.js
-
-- MUST use **yarn** (`yarn`, `yarn add`, `yarn remove`)
-- NEVER use npm commands
-- MUST use `yarn add` instead of manually editing package.json
-- During upgrade work, if a dependency turns out to be unused, MUST propose removing it (`yarn remove`) instead of upgrading it
-
-### Python
-
-- MUST use **uv** (`uv`, `uv add`, `uv remove`, `uv sync`, `uv run`)
-- NEVER use `pip`, `pip install`, `poetry`, or `conda` for dependency management
-- MUST use `uv add` instead of manually editing `pyproject.toml` / `requirements.txt`
-- During upgrade work, if a dependency turns out to be unused, MUST propose removing it (`uv remove`) instead of upgrading it
-
 ## General
 
 - When today's date is needed, MUST run the `date` command to get it — NEVER rely on model's internal knowledge
@@ -82,11 +66,6 @@ When asked to fix a bug or implement a new feature:
 
 - MUST check for duplicate code with existing codebase after completing a significant implementation, and refactor to eliminate redundancy. Prioritize readability.
 - SHOULD run `/code-review` after a significant implementation to catch bugs and cleanups (`--fix` to apply, `--comment` to post inline PR comments); use `/simplify` for quality-only refactors and `/security-review` when the change has a security surface
-- MUST run after making code changes:
-  1. `yarn format` - Format code with Prettier
-  2. `yarn lint` - Check for linting errors
-  3. `yarn build` - Verify build succeeds
-  4. `yarn typecheck` - If the script is defined in package.json, MUST run it. Many repos split `yarn build` (compile-only, tsconfig.build.json, often excludes `test/`) from `yarn typecheck` (full project, tsconfig.json, includes tests). CI runs typecheck; `yarn build` can pass while typecheck fails when test files reference types you tightened. Skipping this step is the most common cause of "passed locally, failed in CI."
 
 ## Documentation Maintenance
 
@@ -94,27 +73,27 @@ When asked to fix a bug or implement a new feature:
 - MUST ensure command examples, options, and usage instructions are accurate
 - MUST update CLAUDE.md/AGENTS.md if they contain relevant CLI documentation
 - MUST check the repository's README.md and docs/ when specs are added or changed, update them accordingly, and include the updates in the same commit
-- MUST generate proper web components (Vue/Astro) for web documentation — NEVER plain markdown files, unless explicitly asked for markdown
 - MUST VERIFY the actual implementation before writing API/tool documentation — NEVER guess API names or parameters
 
 ## Skills
 
 Prefer these skills over doing the work by hand:
 
-- **New project** → `/init-project`
-- **Publish an npm package** → `/publish`
-- **Release the MulmoClaude app** (GitHub release, not npm) → `/release-app`
 - **PR bot review triage** → `/gh-review-loop` (see PR Bot Review Handling)
 - **Code review / refactor / security** → `/code-review`, `/simplify`, `/security-review` (see Code Quality)
 - **Web verify / run / UI test / perf** → `/verify`, `run`, `/pr-ui-test`, `/web-perf` (see Web Design & Debugging)
 - **Tech-blog article from a merged PR** → `/pr-to-tech-blog` (see Sharing Knowledge)
 
-## Import Style
+## Web Design & Debugging
 
-- MUST use top-level `import` for npm packages — NEVER use `await import()` for packages that are always needed
-- Dynamic `import()` MAY only be used for conditional/optional dependencies that are not always loaded
+MUST prefer the dedicated skills over driving a browser by hand:
 
-- NEVER re-export modules unless there is a specific, justified reason
+- `/verify` — exercise a change end-to-end and observe real behavior (run before committing nontrivial UI changes)
+- `run` — launch and drive the project's app to see a change working / take a screenshot
+- `/pr-ui-test` — UI regression check for a PR
+- `/web-perf` — web performance investigation
+
+Falling back to the Playwright MCP by hand (web-design steps, debugging a live flow, the `browser_*` tool list) → [`docs/web-debugging.md`](docs/web-debugging.md).
 
 ## Coding Style
 
@@ -130,16 +109,11 @@ Human context and memory are limited. MUST write code with this in mind:
 ### Rules
 
 - MUST keep functions under 20 lines; split into smaller functions if needed
-- MUST prefer `const` over `let`; NEVER use `var`
-- MUST prefer functional approaches (`forEach`, `map`, `filter`, `reduce`) over `for` loops
-- MUST prefer `async/await` over `.then()` chains
-- MUST use explicit type definitions; NEVER use `any`
-- NEVER silence lint/type errors with `eslint-disable`, `@ts-ignore`, or `@ts-expect-error` — fix the types / root cause instead (define proper type files if needed)
 - NEVER use magic numbers; MUST use named constants
 - SHOULD include units in variable names when applicable (e.g., `timeout_ms`, `distance_km`)
 - MUST follow DRY principle (Don't Repeat Yourself)
-- MUST add try/catch for operations that can fail
-  - Network requests (fetch, API calls) MUST include timeout handling with AbortController
+- MUST add try/catch (or language equivalent) for operations that can fail
+  - Network requests MUST include timeout handling
   - MUST provide meaningful error messages with context (URL, file path, etc.)
 
 ### Comments
@@ -150,53 +124,6 @@ Human context and memory are limited. MUST write code with this in mind:
 - **NEVER reference the current task, fix, or callers** in comments (`// used by X`, `// added for the Y flow`, `// see issue #123`) — that context belongs in the PR description / commit message, and rots as the codebase evolves.
 - **Don't write multi-paragraph docstrings or multi-line comment blocks** unless absolutely required by an external contract (public-API JSDoc on a published package). One short line is the cap.
 - When refactoring, **delete WHAT comments aggressively** rather than keeping them around "just in case" — the source of truth is the code.
-
-## Vue.js
-
-- MUST use Composition API (NEVER Options API)
-- MUST use relative paths for imports (NEVER alias paths like `@/`)
-- MUST use `emit` instead of passing functions as props
-- SHOULD prefer `ref` over `reactive`
-- NEVER use `v-html` (security risk)
-- MUST use vue-i18n for text; NEVER hardcode strings in templates (use `$t()`)
-
-## Styling
-
-- MUST style components with **Tailwind utilities only** — NEVER write CSS. No `<style>` / `<style scoped>` block, no per-component `.css` file, no `<style src="...">` import
-- MUST convert an existing `<style>` block to utilities when touching that component, rather than extending it
-- Repeated utility runs MUST be extracted as a shared **component** (or a `class` string constant) — NEVER as a shared CSS class
-- Dynamic / themed values MUST go through design tokens consumed by a utility (`bg-[var(--cell-bg)]`), NEVER a stylesheet rule
-- If something genuinely cannot be a utility (`@keyframes`, `:deep()` into injected markup), MUST put it in the **Tailwind theme or one global stylesheet** with a one-line reason — NEVER in a component
-- Why: shared CSS silently stops applying when a component's template has a **fragment root** — Vue gives the parent's scope id to a single root element only, so scoped rules match nothing and the element falls back to browser defaults (mulmoterminal #787). Utilities are global and have no such failure mode
-
-## Testing
-
-- SHOULD use Node.js native `node:test` and `node:assert` by default; if the project already uses another runner (e.g. vitest, as in Cloudflare Workers projects), MUST follow the existing one
-- MUST mock external APIs (tests MUST run without API keys)
-- MUST place tests in `test/` at the repo root, named `test_xxx.ts`; MUST add a `test` script to package.json and run it in CI
-- Full unit-test pattern checklist (happy/edge/corner/boundary/empty/null/invalid/error/negative/regression), golden tests, and the **designing-for-testability** rules → [`docs/testing.md`](docs/testing.md). Read before writing or refactoring tests.
-- Cross-platform CI (Linux/Windows/macOS matrix, `node:path` / `node:url` portability) → [`docs/cross-platform-ci.md`](docs/cross-platform-ci.md); Windows-only traps (`fs.watch`, `path.resolve`) → [`docs/windows-gotchas.md`](docs/windows-gotchas.md) — MUST read before debugging a Windows failure.
-
-## Web Design & Debugging
-
-MUST prefer the dedicated skills over driving a browser by hand:
-
-- `/verify` — exercise a change end-to-end and observe real behavior (run before committing nontrivial UI changes)
-- `run` — launch and drive the project's app to see a change working / take a screenshot
-- `/pr-ui-test` — UI regression check for a PR
-- `/web-perf` — web performance investigation
-
-Falling back to the Playwright MCP by hand (web-design steps, debugging a live flow, the `browser_*` tool list) → [`docs/web-debugging.md`](docs/web-debugging.md).
-
-## TypeScript Best Practices
-
-- NEVER use `as` type casts; MUST use type guards instead (e.g., `const isXxx = (x: unknown): x is Type => { ... }`)
-- MUST use existing utility functions from libraries (e.g., `isObject` from graphai) instead of writing your own
-- MUST use `z.infer<typeof schema>` to derive types from Zod schemas; NEVER define duplicate local types
-- MUST use array + `push()` + `join()` pattern for building strings with `const` instead of `let` + `+=`
-- MUST separate pure data transformation functions into their own files for reusability and testability (see [`docs/testing.md`](docs/testing.md) → Designing for testability)
-- MUST use descriptive format names (e.g., "object format" vs "text format") instead of "new/legacy"
-- MUST verify the correct API signatures for the TARGET version when migrating or upgrading packages — NEVER assume old APIs still work
 
 ## Sharing Knowledge as Tech-Blog Articles
 
@@ -231,3 +158,91 @@ When the same instruction or pattern is given 2+ times in a session:
    - **Script**: For complex multi-step operations that benefit from scripting
 3. MUST explain the trade-offs and let the user decide
 4. MUST confirm it works as expected after implementation
+
+## Node.js / TypeScript
+
+### Package Manager
+
+- MUST use **yarn** (`yarn`, `yarn add`, `yarn remove`)
+- NEVER use npm commands
+- MUST use `yarn add` instead of manually editing package.json
+- During upgrade work, if a dependency turns out to be unused, MUST propose removing it (`yarn remove`) instead of upgrading it
+
+### Post-Change Checks
+
+MUST run after making code changes:
+
+1. `yarn format` - Format code with Prettier
+2. `yarn lint` - Check for linting errors
+3. `yarn build` - Verify build succeeds
+4. `yarn typecheck` - If the script is defined in package.json, MUST run it. Many repos split `yarn build` (compile-only, tsconfig.build.json, often excludes `test/`) from `yarn typecheck` (full project, tsconfig.json, includes tests). CI runs typecheck; `yarn build` can pass while typecheck fails when test files reference types you tightened. Skipping this step is the most common cause of "passed locally, failed in CI."
+
+### Skills
+
+- **New project** → `/init-project`
+- **Publish an npm package** → `/publish`
+- **Release the MulmoClaude app** (GitHub release, not npm) → `/release-app`
+
+### Import Style
+
+- MUST use top-level `import` for npm packages — NEVER use `await import()` for packages that are always needed
+- Dynamic `import()` MAY only be used for conditional/optional dependencies that are not always loaded
+- NEVER re-export modules unless there is a specific, justified reason
+
+### Coding Style
+
+- MUST prefer `const` over `let`; NEVER use `var`
+- MUST prefer functional approaches (`forEach`, `map`, `filter`, `reduce`) over `for` loops
+- MUST prefer `async/await` over `.then()` chains
+- MUST use explicit type definitions; NEVER use `any`
+- NEVER silence lint/type errors with `eslint-disable`, `@ts-ignore`, or `@ts-expect-error` — fix the types / root cause instead (define proper type files if needed)
+- Network requests (fetch, API calls) MUST include timeout handling with AbortController
+
+### TypeScript Best Practices
+
+- NEVER use `as` type casts; MUST use type guards instead (e.g., `const isXxx = (x: unknown): x is Type => { ... }`)
+- MUST use existing utility functions from libraries (e.g., `isObject` from graphai) instead of writing your own
+- MUST use `z.infer<typeof schema>` to derive types from Zod schemas; NEVER define duplicate local types
+- MUST use array + `push()` + `join()` pattern for building strings with `const` instead of `let` + `+=`
+- MUST separate pure data transformation functions into their own files for reusability and testability (see [`docs/testing.md`](docs/testing.md) → Designing for testability)
+- MUST use descriptive format names (e.g., "object format" vs "text format") instead of "new/legacy"
+- MUST verify the correct API signatures for the TARGET version when migrating or upgrading packages — NEVER assume old APIs still work
+
+### Vue.js
+
+- MUST use Composition API (NEVER Options API)
+- MUST use relative paths for imports (NEVER alias paths like `@/`)
+- MUST use `emit` instead of passing functions as props
+- SHOULD prefer `ref` over `reactive`
+- NEVER use `v-html` (security risk)
+- MUST use vue-i18n for text; NEVER hardcode strings in templates (use `$t()`)
+
+### Styling
+
+- MUST style components with **Tailwind utilities only** — NEVER write CSS. No `<style>` / `<style scoped>` block, no per-component `.css` file, no `<style src="...">` import
+- MUST convert an existing `<style>` block to utilities when touching that component, rather than extending it
+- Repeated utility runs MUST be extracted as a shared **component** (or a `class` string constant) — NEVER as a shared CSS class
+- Dynamic / themed values MUST go through design tokens consumed by a utility (`bg-[var(--cell-bg)]`), NEVER a stylesheet rule
+- If something genuinely cannot be a utility (`@keyframes`, `:deep()` into injected markup), MUST put it in the **Tailwind theme or one global stylesheet** with a one-line reason — NEVER in a component
+- Why: shared CSS silently stops applying when a component's template has a **fragment root** — Vue gives the parent's scope id to a single root element only, so scoped rules match nothing and the element falls back to browser defaults (mulmoterminal #787). Utilities are global and have no such failure mode
+
+### Testing
+
+- SHOULD use Node.js native `node:test` and `node:assert` by default; if the project already uses another runner (e.g. vitest, as in Cloudflare Workers projects), MUST follow the existing one
+- MUST mock external APIs (tests MUST run without API keys)
+- MUST place tests in `test/` at the repo root, named `test_xxx.ts`; MUST add a `test` script to package.json and run it in CI
+- Full unit-test pattern checklist (happy/edge/corner/boundary/empty/null/invalid/error/negative/regression), golden tests, and the **designing-for-testability** rules → [`docs/testing.md`](docs/testing.md). Read before writing or refactoring tests.
+- Cross-platform CI (Linux/Windows/macOS matrix, `node:path` / `node:url` portability) → [`docs/cross-platform-ci.md`](docs/cross-platform-ci.md); Windows-only traps (`fs.watch`, `path.resolve`) → [`docs/windows-gotchas.md`](docs/windows-gotchas.md) — MUST read before debugging a Windows failure.
+
+### Documentation
+
+- MUST generate proper web components (Vue/Astro) for web documentation — NEVER plain markdown files, unless explicitly asked for markdown
+
+## Python
+
+### Package Manager
+
+- MUST use **uv** (`uv`, `uv add`, `uv remove`, `uv sync`, `uv run`)
+- NEVER use `pip`, `pip install`, `poetry`, or `conda` for dependency management
+- MUST use `uv add` instead of manually editing `pyproject.toml` / `requirements.txt`
+- During upgrade work, if a dependency turns out to be unused, MUST propose removing it (`uv remove`) instead of upgrading it
