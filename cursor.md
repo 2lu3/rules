@@ -4,10 +4,19 @@
 
 ## Package Manager
 
+### Node.js
+
 - MUST use **yarn** (`yarn`, `yarn add`, `yarn remove`)
 - NEVER use npm commands
 - MUST use `yarn add` instead of manually editing package.json
 - During upgrade work, if a dependency turns out to be unused, MUST propose removing it (`yarn remove`) instead of upgrading it
+
+### Python
+
+- MUST use **uv** (`uv`, `uv add`, `uv remove`, `uv sync`, `uv run`)
+- NEVER use `pip`, `pip install`, `poetry`, or `conda` for dependency management
+- MUST use `uv add` instead of manually editing `pyproject.toml` / `requirements.txt`
+- During upgrade work, if a dependency turns out to be unused, MUST propose removing it (`uv remove`) instead of upgrading it
 
 ## General
 
