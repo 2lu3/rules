@@ -60,7 +60,6 @@ When asked to fix a bug or implement a new feature:
 - NEVER try quick-fix approaches (hardcoding values, JSON workarounds)
 - MUST check git history/diffs when investigating regressions
 - MUST understand what the user is asking before jumping to debug
-- Deeper methodology — bug-family matrices, sweeping a rule across every call site (then extracting ONE shared helper), adversarially reviewing retry/replay mechanisms, deterministic per-branch repro, `git fetch` before judging another repo's state, and never trusting an error string as the only evidence → [`docs/debugging-methodology.md`](docs/debugging-methodology.md). Read before a non-trivial bug hunt.
 
 ## Code Quality
 
@@ -92,8 +91,6 @@ MUST prefer the dedicated skills over driving a browser by hand:
 - `run` — launch and drive the project's app to see a change working / take a screenshot
 - `/pr-ui-test` — UI regression check for a PR
 - `/web-perf` — web performance investigation
-
-Falling back to the Playwright MCP by hand (web-design steps, debugging a live flow, the `browser_*` tool list) → [`docs/web-debugging.md`](docs/web-debugging.md).
 
 ## Coding Style
 
@@ -204,7 +201,7 @@ MUST run after making code changes:
 - MUST use existing utility functions from libraries (e.g., `isObject` from graphai) instead of writing your own
 - MUST use `z.infer<typeof schema>` to derive types from Zod schemas; NEVER define duplicate local types
 - MUST use array + `push()` + `join()` pattern for building strings with `const` instead of `let` + `+=`
-- MUST separate pure data transformation functions into their own files for reusability and testability (see [`docs/testing.md`](docs/testing.md) → Designing for testability)
+- MUST separate pure data transformation functions into their own files for reusability and testability
 - MUST use descriptive format names (e.g., "object format" vs "text format") instead of "new/legacy"
 - MUST verify the correct API signatures for the TARGET version when migrating or upgrading packages — NEVER assume old APIs still work
 
@@ -231,8 +228,6 @@ MUST run after making code changes:
 - SHOULD use Node.js native `node:test` and `node:assert` by default; if the project already uses another runner (e.g. vitest, as in Cloudflare Workers projects), MUST follow the existing one
 - MUST mock external APIs (tests MUST run without API keys)
 - MUST place tests in `test/` at the repo root, named `test_xxx.ts`; MUST add a `test` script to package.json and run it in CI
-- Full unit-test pattern checklist (happy/edge/corner/boundary/empty/null/invalid/error/negative/regression), golden tests, and the **designing-for-testability** rules → [`docs/testing.md`](docs/testing.md). Read before writing or refactoring tests.
-- Cross-platform CI (Linux/Windows/macOS matrix, `node:path` / `node:url` portability) → [`docs/cross-platform-ci.md`](docs/cross-platform-ci.md); Windows-only traps (`fs.watch`, `path.resolve`) → [`docs/windows-gotchas.md`](docs/windows-gotchas.md) — MUST read before debugging a Windows failure.
 
 ### Documentation
 
