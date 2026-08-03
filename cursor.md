@@ -1,4 +1,4 @@
-# Global Claude Code Settings
+# Global Cursor Settings
 
 > Keywords: **MUST** / **NEVER** = mandatory. **SHOULD** = recommended unless there is a clear reason not to. **MAY** = optional.
 
