@@ -123,6 +123,10 @@ Human context and memory are limited. MUST write code with this in mind:
 - **Don't write multi-paragraph docstrings or multi-line comment blocks** unless absolutely required by an external contract (public-API JSDoc on a published package). One short line is the cap.
 - When refactoring, **delete WHAT comments aggressively** rather than keeping them around "just in case" — the source of truth is the code.
 
+## File Encoding
+
+- When creating or writing CSV files, MUST use **UTF-8 with BOM** (e.g. Python `utf-8-sig`, Node `Buffer.from('\uFEFF' + content)`) — NEVER plain UTF-8 without BOM
+
 ## Sharing Knowledge as Tech-Blog Articles
 
 During development, when a generally-shareable insight emerges — a tool we picked, a workaround we discovered, a non-obvious gotcha — propose turning it into a short tech-blog article.
