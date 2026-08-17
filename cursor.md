@@ -44,13 +44,15 @@ Core principles it enforces — and which MUST hold even when triaging by hand:
 
 ## Bug Fix / Feature Request Workflow
 
+- MUST write pull request titles and descriptions in Japanese. Keep code identifiers, proper nouns, GitHub keywords (e.g., `Closes #<n>`), and other technically required strings in their original form.
+
 When asked to fix a bug or implement a new feature:
 
 1. MUST discuss and clarify requirements with the user
 2. MUST create a GitHub issue summarizing the task once scope is clear
 3. MUST create a plan file under the repository's `plans/` directory (e.g., `plans/fix-xxx.md` or `plans/feat-xxx.md`) — this file MUST be committed to the repo
 4. MUST implement based on the plan
-5. MUST include the user's original request in the PR description as a "User Prompt" section — when the request spans multiple conversation turns, consolidate the user's messages into a coherent summary that preserves all of the user's intent without omitting details. Clean up formatting but NEVER add content beyond what the user said. If there are multiple distinct requests, list each as a bullet point
+5. MUST include the user's original request in the PR description under the exact Markdown heading `# User Prompt` — when the request spans multiple conversation turns, consolidate the user's messages into a coherent summary that preserves all of the user's intent without omitting details. Clean up formatting but NEVER add content beyond what the user said. If there are multiple distinct requests, list each as a bullet point
 6. MUST include detailed implementation approach, proposed steps, and key decisions in the PR description — important information discussed in chat MUST be persisted as files or PR comments, NEVER only in chat
 7. For AI-generated code PRs, MUST put a **Summary** section and an **Items to Confirm / Review** section at the **very top** of the PR description (before User Prompt, implementation details, etc.). The reviewer should see the summary and explicit review-focus points first, so they know what changed and what the author specifically wants a human to check (e.g., risky decisions, assumptions, unverified behaviors).
 8. MUST end the PR description with GitHub closing keyword(s) for the issue created in step 2, using `Closes #<n>`, so merging the PR automatically closes that issue. Place them at the **very end** of the body (after all other sections). If multiple issues apply, list each on its own line (`Closes #n`).
