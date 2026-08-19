@@ -52,7 +52,11 @@ When asked to fix a bug or implement a new feature:
 2. MUST create a GitHub issue summarizing the task once scope is clear
 3. MUST create a plan file under the repository's `plans/` directory (e.g., `plans/fix-xxx.md` or `plans/feat-xxx.md`) — this file MUST be committed to the repo
 4. MUST implement based on the plan
-5. MUST include the user's original request in the PR description under the exact Markdown heading `# User Prompt` — when the request spans multiple conversation turns, consolidate the user's messages into a coherent summary that preserves all of the user's intent without omitting details. Clean up formatting but NEVER add content beyond what the user said. If there are multiple distinct requests, list each as a bullet point
+5. PR 説明文の正確な Markdown 見出し `# User Prompt` の下に、この PR で実現する要求の合意を MUST で書く。
+   - `# User Prompt` は発言ログではない。議論を経て「何を・どこまでやるか」が同じ理解になるよう、一つの完成した指示として再構成し、説明する。
+   - ユーザーの発言は途中の断片・言い直しであることが多い。会話全体から目的と範囲を読み取り、第三者が読んで合意できる形に MUST で書き直す。
+   - 原文の貼り付け、発言順の羅列、会話が支持しない要件の追加は NEVER。
+   - 独立した要求が複数ある場合のみ、それぞれを箇条書きにする。
 6. MUST include detailed implementation approach, proposed steps, and key decisions in the PR description — important information discussed in chat MUST be persisted as files or PR comments, NEVER only in chat
 7. For AI-generated code PRs, MUST put a **Summary** section and an **Items to Confirm / Review** section at the **very top** of the PR description (before User Prompt, implementation details, etc.). The reviewer should see the summary and explicit review-focus points first, so they know what changed and what the author specifically wants a human to check (e.g., risky decisions, assumptions, unverified behaviors).
 8. MUST end the PR description with GitHub closing keyword(s) for the issue created in step 2, using `Closes #<n>`, so merging the PR automatically closes that issue. Place them at the **very end** of the body (after all other sections). If multiple issues apply, list each on its own line (`Closes #n`).
