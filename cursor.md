@@ -11,12 +11,14 @@
 - NEVER perform git commit, push, or other git operations without explicit user permission
 - MUST **check current branch** with `git branch` or `git status` before making changes
   - If the branch is different from expected, MUST ask the user which branch to use
-- MUST **create a feature branch** before starting implementation work
-  - MUST `git fetch` first and check `git log HEAD..origin/<default-branch>` — branch only from an up-to-date base. A local default branch dozens of commits behind produces work built on files the mainline has since moved, renamed, or re-linted, and the whole implementation then has to be relocated. "The repo looked fine when I read it" is not evidence — the working copy can be stale.
+- MUST detect whether the working copy is the **primary clone** or a **linked worktree** (`git rev-parse --git-dir` vs `--git-common-dir`; they match in the primary clone)
+  - Primary clone: MUST stay on `main` — NEVER create or check out a feature branch there
+  - Linked worktree: MUST **create a feature branch** before starting implementation work
+    - MUST `git fetch` first and check `git log HEAD..origin/<default-branch>` — branch only from an up-to-date base. A local default branch dozens of commits behind produces work built on files the mainline has since moved, renamed, or re-linted, and the whole implementation then has to be relocated. "The repo looked fine when I read it" is not evidence — the working copy can be stale.
 - MUST ask before running: `git commit`, `git push`, `git merge`, `git rebase`, etc.
 - NEVER use `git add .` or `git add <directory>` — MUST add files individually
 - NEVER delete untracked files
-- NEVER push directly to main — MUST create a feature branch and open a PR
+- NEVER push directly to `main` — from a worktree, MUST open a PR from the feature branch
 - MUST use merge commit (`--merge`) when merging PRs — NEVER use squash merge
 - NEVER use `git rebase`
 - NEVER use `git push --force` (unconditional overwrite). `git push --force-with-lease` is permitted only on a feature branch you just pushed yourself, after `git commit --amend` or similar local rewrite — it aborts safely if anyone else pushed in the meantime. NEVER force-push (any variant) to `main` or shared branches.
@@ -112,13 +114,13 @@ Human context and memory are limited. MUST write code with this in mind:
 
 ### Rules
 
-- MUST keep functions under 20 lines; split into smaller functions if needed
 - NEVER use magic numbers; MUST use named constants
 - SHOULD include units in variable names when applicable (e.g., `timeout_ms`, `distance_km`)
 - MUST follow DRY principle (Don't Repeat Yourself)
 - MUST add try/catch (or language equivalent) for operations that can fail
   - Network requests MUST include timeout handling
   - MUST provide meaningful error messages with context (URL, file path, etc.)
+- MUST use existing library or standard-library functions instead of writing your own parsers/helpers (e.g. `isObject` from graphai, pydantic-settings / dotenv for `.env`). NEVER reinvent what the project already depends on. Adding a new package still requires asking first (see Change Scope Rules)
 
 ### Comments
 
