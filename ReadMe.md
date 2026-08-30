@@ -14,11 +14,7 @@ worktree setup は現在のブランチを同期したり、`main` を pull し�
 
 ### セットアップ
 
-`pre-commit` をインストールした後、worktree のルートで次を実行します。
-
-```sh
-./scripts/setup-worktree.sh
-```
+`pre-commit` をインストール済みの環境で、worktree 作成時に利用するソフトから `scripts/setup-worktree.sh` が自動実行されると、pre-commit hook が有効になります。
 
 チェックを手動で全ファイルへ実行する場合は次を使います。
 
@@ -34,7 +30,7 @@ pre-commit run --all-files
 curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh
 ```
 
-導入後、`pre-commit` をインストールしてから `./scripts/setup-worktree.sh` を実行すると、pre-commit hook が有効になります。
+導入後は、worktree 作成時に利用するソフトから `scripts/setup-worktree.sh` が自動実行される構成にしてください。
 
 
 ## 参考

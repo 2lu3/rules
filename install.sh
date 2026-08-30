@@ -84,4 +84,3 @@ done
 
 # 導入結果と次の手順を案内する
 printf 'rules installed in %s\n' "$repo_root"
-printf 'Install pre-commit, then run ./scripts/setup-worktree.sh to enable the hook\n'
