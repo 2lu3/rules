@@ -26,6 +26,16 @@ worktree setup は現在のブランチを同期したり、`main` を pull し�
 pre-commit run --all-files
 ```
 
+### 他のリポジトリへの導入
+
+対象リポジトリのルートで次を実行すると、CI、pre-commit、worktree セットアップ、エージェント向けルールを導入できます。既存の対象ファイルは更新されます。
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh
+```
+
+導入後、`pre-commit` をインストールしてから `./scripts/setup-worktree.sh` を実行すると、pre-commit hook が有効になります。
+
 
 ## 参考
 
