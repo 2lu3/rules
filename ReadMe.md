@@ -10,7 +10,13 @@
 - `scripts/setup-worktree.sh`: worktree 作成時に利用するソフトから自動実行されるセットアップスクリプトです
 - `AGENTS.md`: エージェントの判断が必要なルールを定義します
 
-worktree setup は現在のブランチを同期したり、`main` を pull したりしません。プロジェクト固有の format、lint、build、typecheck、test は各プロジェクトの設定で追加してください。
+`scripts/setup-worktree.sh` は共通のディスパッチャーです。元リポジトリのパスと worktree リポジトリのパスを必須引数として受け取り、worktree 側の `scripts/setup-worktree-*.sh` をファイル名順に実行します。各スクリプトには、元リポジトリの絶対パスと worktree リポジトリの絶対パスが同じ順序で渡されます。
+
+```sh
+scripts/setup-worktree.sh /path/to/original-repository /path/to/worktree-repository
+```
+
+プロジェクト固有の処理は、例えば `scripts/setup-worktree-example.sh` として追加します。対象ファイルがない場合、共通スクリプトは何も実行せず正常終了します。worktree setup は現在のブランチを同期したり、`main` を pull したりしません。プロジェクト固有の format、lint、build、typecheck、test は各プロジェクトの `setup-worktree-*.sh` に追加してください。
 
 ### セットアップ
 
