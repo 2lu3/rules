@@ -90,7 +90,6 @@ Prefer these skills over doing the work by hand:
 - **PR bot review triage** → `/gh-review-loop` (see PR Bot Review Handling)
 - **Code review / refactor / security** → `/code-review`, `/simplify`, `/security-review` (see Code Quality)
 - **Web verify / run / UI test / perf** → `/verify`, `run`, `/pr-ui-test`, `/web-perf` (see Web Design & Debugging)
-- **Tech-blog article from a merged PR** → `/pr-to-tech-blog` (see Sharing Knowledge)
 
 ## Web Design & Debugging
 
@@ -130,44 +129,6 @@ Human context and memory are limited. MUST write code with this in mind:
 - **NEVER reference the current task, fix, or callers** in comments (`// used by X`, `// added for the Y flow`, `// see issue #123`) — that context belongs in the PR description / commit message, and rots as the codebase evolves.
 - **Don't write multi-paragraph docstrings or multi-line comment blocks** unless absolutely required by an external contract (public-API JSDoc on a published package). One short line is the cap.
 - When refactoring, **delete WHAT comments aggressively** rather than keeping them around "just in case" — the source of truth is the code.
-
-## File Encoding
-
-- When creating or writing CSV files, MUST use **UTF-8 with BOM** (e.g. Python `utf-8-sig`, Node `Buffer.from('\uFEFF' + content)`) — NEVER plain UTF-8 without BOM
-
-## Sharing Knowledge as Tech-Blog Articles
-
-During development, when a generally-shareable insight emerges — a tool we picked, a workaround we discovered, a non-obvious gotcha — propose turning it into a short tech-blog article.
-
-- Trigger: insights with **value beyond the current repository** (e.g. CI tooling choices, language / framework gotchas, security setups, integration patterns). Skip repo-specific bug fixes, refactors, or anything that only makes sense with full project context.
-- When you have the merged PR for the change, MUST use the `/pr-to-tech-blog` skill — it knows the destination directory, frontmatter shape, and house style.
-- ALWAYS confirm with the user before drafting, and pick a title together if it isn't obvious.
-
-## Continuous Learning
-
-When learning something worth remembering, MUST first choose the right destination:
-- **Rules / workflows / coding standards** (apply to all future work) → this file (CLAUDE.md)
-- **Facts about the user, feedback/corrections, or project context** (not derivable from code or git history) → file-based memory (`~/.claude/.../memory/`, with a one-line pointer added to `MEMORY.md`)
-
-When adding to this file:
-1. MUST confirm with the user before adding
-2. MUST add the learning to the appropriate section (or create a new section if needed)
-3. MUST keep entries concise and actionable
-
-After completing a task (PR merge, command completion, etc.), MUST review the session:
-- If the user gave corrections, redirections, or repeated instructions during the session, MUST evaluate whether they indicate a missing rule (→ CLAUDE.md), a fact/preference worth persisting (→ memory), or a candidate for a new skill
-- If so, MUST propose saving it to the appropriate location
-
-## Automation Proposals
-
-When the same instruction or pattern is given 2+ times in a session:
-1. MUST recognize the repetition and propose automation
-2. MUST choose the most appropriate method:
-   - **CLAUDE.md**: For rules, guidelines, or workflows (e.g., release process, coding standards)
-   - **Skill/Command**: For executable actions that can be parameterized (e.g., `/release`, `/deploy`)
-   - **Script**: For complex multi-step operations that benefit from scripting
-3. MUST explain the trade-offs and let the user decide
-4. MUST confirm it works as expected after implementation
 
 ## Node.js / TypeScript
 
