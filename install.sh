@@ -23,6 +23,11 @@ if ! command -v git >/dev/null 2>&1; then
   fail 'git is required'
 fi
 
+# pre-commit コマンドが利用できることを確認する
+if ! command -v pre-commit >/dev/null 2>&1; then
+  fail 'pre-commit is required'
+fi
+
 # 対象リポジトリのルートを特定する
 if ! repo_root="$(git rev-parse --show-toplevel 2>/dev/null)"; then
   fail 'run this script inside a Git repository'
@@ -82,5 +87,13 @@ for relative_path in $INSTALLATION_FILES; do
   install_file "$relative_path"
 done
 
-# 導入結果と次の手順を案内する
+# リポジトリの共有 Git hook に pre-commit を登録する
+if ! (
+  cd "$repo_root"
+  pre-commit install --install-hooks
+); then
+  fail "could not install pre-commit hook in $repo_root"
+fi
+
+# 導入結果を表示する
 printf 'rules installed in %s\n' "$repo_root"

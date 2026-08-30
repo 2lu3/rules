@@ -11,6 +11,7 @@ Issue #11 の要件に従い、GitHub Actions の CI、pre-commit 設定と work
 - 必要な4ファイルを一時ディレクトリへ先にダウンロードし、成功後に対象リポジトリへ配置する。
 - 配布元は `main` ブランチの GitHub raw URL に固定する。
 - 既存ファイルは更新し、`pre-commit` 自体のインストールは対象プロジェクトの環境に任せる。
+- `install.sh` が `pre-commit install --install-hooks` を実行し、`setup-worktree.sh` では pre-commit のインストールを行わない。
 - `setup-worktree.sh` は worktree 作成時に利用するソフトが自動実行する前提とし、インストーラーから手動実行を促さない。
 
 ## 検証
