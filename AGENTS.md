@@ -178,14 +178,7 @@ When the same instruction or pattern is given 2+ times in a session:
 - MUST use `yarn add` instead of manually editing package.json
 - During upgrade work, if a dependency turns out to be unused, MUST propose removing it (`yarn remove`) instead of upgrading it
 
-### Post-Change Checks
 
-MUST run after making code changes:
-
-1. `yarn format` - Format code with Prettier
-2. `yarn lint` - Check for linting errors
-3. `yarn build` - Verify build succeeds
-4. `yarn typecheck` - If the script is defined in package.json, MUST run it. Many repos split `yarn build` (compile-only, tsconfig.build.json, often excludes `test/`) from `yarn typecheck` (full project, tsconfig.json, includes tests). CI runs typecheck; `yarn build` can pass while typecheck fails when test files reference types you tightened. Skipping this step is the most common cause of "passed locally, failed in CI."
 
 ### Skills
 
