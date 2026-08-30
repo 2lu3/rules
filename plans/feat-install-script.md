@@ -8,7 +8,7 @@ Issue #11 の要件に従い、GitHub Actions の CI、pre-commit 設定と work
 
 - リポジトリルートの `install.sh` を POSIX `sh` として追加する。
 - `curl -fsSL .../install.sh | sh` で実行できるよう、対象リポジトリの Git ルートを検出する。
-- 必要な4ファイルを一時ディレクトリへ先にダウンロードし、成功後に対象リポジトリへ配置する。
+- 必要な4ファイルを対象リポジトリへ順にダウンロードし、再実行時に同じ状態になるよう更新する。
 - 配布元は `main` ブランチの GitHub raw URL に固定する。
 - 既存ファイルは更新し、`pre-commit` 自体のインストールは対象プロジェクトの環境に任せる。
 - `install.sh` が `pre-commit install --install-hooks` を実行し、`setup-worktree.sh` では pre-commit のインストールを行わない。

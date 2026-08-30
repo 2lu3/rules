@@ -8,91 +8,53 @@ INSTALLATION_FILES="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml s
 CURL_CONNECT_TIMEOUT_SECONDS=10
 CURL_MAX_TIME_SECONDS=60
 
-# エラー内容を統一して表示する
-fail() {
-  printf 'rules install failed: %s\n' "$1" >&2
-  exit 1
-}
-
 # 実行に必要なコマンドを確認する
 if ! command -v curl >/dev/null 2>&1; then
-  fail 'curl is required'
+  printf 'rules install failed: curl is required\n' >&2
+  exit 1
 fi
 
-if ! command -v git >/dev/null 2>&1; then
-  fail 'git is required'
-fi
-
-# pre-commit コマンドが利用できることを確認する
 if ! command -v pre-commit >/dev/null 2>&1; then
-  fail 'pre-commit is required'
+  printf 'rules install failed: pre-commit is required\n' >&2
+  exit 1
 fi
 
 # 対象リポジトリのルートを特定する
 if ! repo_root="$(git rev-parse --show-toplevel 2>/dev/null)"; then
-  fail 'run this script inside a Git repository'
+  printf 'rules install failed: run this script inside a Git repository\n' >&2
+  exit 1
 fi
 
-# ダウンロード中の一時ファイルを保存する場所を作る
-if ! temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/rules-install.XXXXXX")"; then
-  fail 'could not create a temporary directory'
-fi
+cd "$repo_root"
 
-# 中断や終了時に一時ファイルを削除する
-cleanup() {
-  rm -rf "$temp_dir"
-}
-
-trap cleanup 0
-trap 'exit 1' 1 2 15
-
-# 配布元から1ファイルを一時領域へダウンロードする
+# 配布元から1ファイルを対象リポジトリへダウンロードする
 download_file() {
   relative_path="$1"
-  temporary_path="$temp_dir/$relative_path"
-  temporary_directory="$(dirname "$temporary_path")"
   source_url="$RULES_RAW_BASE_URL/$relative_path"
+  target_directory="$(dirname "$relative_path")"
 
-  mkdir -p "$temporary_directory"
+  mkdir -p "$target_directory"
   if ! curl -fsSL --proto '=https' --tlsv1.2 \
     --connect-timeout "$CURL_CONNECT_TIMEOUT_SECONDS" \
     --max-time "$CURL_MAX_TIME_SECONDS" \
-    "$source_url" -o "$temporary_path"; then
-    fail "could not download $source_url"
+    "$source_url" -o "$relative_path"; then
+    printf 'rules install failed: could not download %s\n' "$source_url" >&2
+    exit 1
   fi
 }
 
-# ダウンロード済みのファイルを対象リポジトリへ配置する
-install_file() {
-  relative_path="$1"
-  temporary_path="$temp_dir/$relative_path"
-  target_path="$repo_root/$relative_path"
-  target_directory="$(dirname "$target_path")"
-
-  mkdir -p "$target_directory"
-  chmod 0644 "$temporary_path"
-  if [ "$relative_path" = "scripts/setup-worktree.sh" ]; then
-    chmod 0755 "$temporary_path"
-  fi
-  mv "$temporary_path" "$target_path"
-}
-
-# 先に全ファイルを取得し、取得失敗時の部分更新を防ぐ
+# 配布ファイルを順に取得する
 for relative_path in $INSTALLATION_FILES; do
   download_file "$relative_path"
 done
 
-# 全ファイルの取得後に対象リポジトリを更新する
-for relative_path in $INSTALLATION_FILES; do
-  install_file "$relative_path"
-done
+# worktree セットアップスクリプトに実行権限を付与する
+chmod 0755 scripts/setup-worktree.sh
 
 # リポジトリの共有 Git hook に pre-commit を登録する
-if ! (
-  cd "$repo_root"
-  pre-commit install --install-hooks
-); then
-  fail "could not install pre-commit hook in $repo_root"
+if ! pre-commit install --install-hooks; then
+  printf 'rules install failed: could not install pre-commit hook in %s\n' "$repo_root" >&2
+  exit 1
 fi
 
 # 導入結果を表示する
