@@ -25,6 +25,30 @@ fi
 
 cd -- "$worktree_repo_path"
 
+validate_current_branch() {
+  local current_branch
+
+  if ! current_branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null)"; then
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      printf 'worktree setup failed: detached HEAD is not supported; checkout a feature branch before running setup\n' >&2
+    else
+      printf 'worktree setup failed: worktree path is not a Git worktree: %s\n' "$worktree_repo_path" >&2
+    fi
+    exit 1
+  fi
+
+  case "$current_branch" in
+    main|master)
+      printf 'worktree setup failed: branch "%s" is not allowed; checkout a feature branch before running setup\n' "$current_branch" >&2
+      exit 1
+      ;;
+  esac
+
+  printf 'worktree setup: branch validation passed: %s\n' "$current_branch"
+}
+
+validate_current_branch
+
 shopt -s nullglob
 setup_scripts=(scripts/setup-worktree-*.sh)
 

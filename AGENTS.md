@@ -9,12 +9,6 @@
 ## Git Operations
 
 - NEVER perform git commit, push, or other git operations without explicit user permission
-- MUST **check current branch** with `git branch` or `git status` before making changes
-  - If the branch is different from expected, MUST ask the user which branch to use
-- MUST detect whether the working copy is the **primary clone** or a **linked worktree** (`git rev-parse --git-dir` vs `--git-common-dir`; they match in the primary clone)
-  - Primary clone: MUST stay on `main` — NEVER create or check out a feature branch there
-  - Linked worktree: MUST **create a feature branch** before starting implementation work
-    - MUST `git fetch` first and check `git log HEAD..origin/<default-branch>` — branch only from an up-to-date base. A local default branch dozens of commits behind produces work built on files the mainline has since moved, renamed, or re-linted, and the whole implementation then has to be relocated. "The repo looked fine when I read it" is not evidence — the working copy can be stale.
 - MUST ask before running: `git commit`, `git push`, `git merge`, `git rebase`, etc.
 - NEVER use `git add .` or `git add <directory>` — MUST add files individually
 - NEVER delete untracked files
