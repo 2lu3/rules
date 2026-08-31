@@ -12,6 +12,8 @@
 
 `scripts/setup-worktree.sh` は共通のディスパッチャーです。元リポジトリのパスと worktree リポジトリのパスを必須引数として受け取り、worktree 側の `scripts/setup-worktree-*.sh` をファイル名順に実行します。各スクリプトには、元リポジトリの絶対パスと worktree リポジトリの絶対パスが同じ順序で渡されます。
 
+共通スクリプトは固有スクリプトを実行する前に worktree の現在ブランチを検証します。`main`、`master`、detached HEAD では明確なエラーを表示して終了し、それ以外のブランチでは既存のセットアップ処理を続けます。この検証は pre-commit 設定の有無に依存しません。
+
 ```sh
 scripts/setup-worktree.sh /path/to/original-repository /path/to/worktree-repository
 ```
