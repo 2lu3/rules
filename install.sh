@@ -2,15 +2,16 @@
 
 set -eu
 
-# 配布元、対象ファイル、通信タイムアウトを定義する
-RULES_RAW_BASE_URL="https://raw.githubusercontent.com/2lu3/rules/main"
-INSTALLATION_FILES="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml scripts/setup-worktree.sh"
-CURL_CONNECT_TIMEOUT_SECONDS=10
-CURL_MAX_TIME_SECONDS=60
+# 配布元、対象パスを定義する
+RULES_REPO_URL="https://github.com/2lu3/rules.git"
+RULES_REF="main"
+INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml scripts/setup-worktree.sh .agents/skills"
+SKILLS_RELATIVE_PATH=".agents/skills"
+CLAUDE_SKILLS_RELATIVE_PATH=".claude/skills"
 
 # 実行に必要なコマンドを確認する
-if ! command -v curl >/dev/null 2>&1; then
-  printf 'rules install failed: curl is required\n' >&2
+if ! command -v git >/dev/null 2>&1; then
+  printf 'rules install failed: git is required\n' >&2
   exit 1
 fi
 
@@ -27,26 +28,45 @@ fi
 
 cd "$repo_root"
 
-# 配布元から1ファイルを対象リポジトリへダウンロードする
-download_file() {
-  relative_path="$1"
-  source_url="$RULES_RAW_BASE_URL/$relative_path"
-  target_directory="$(dirname "$relative_path")"
+# 配布元を取得する一時ディレクトリを用意し、終了時に必ず削除する
+if ! tmp_dir="$(mktemp -d)"; then
+  printf 'rules install failed: could not create a temporary directory\n' >&2
+  exit 1
+fi
+trap 'rm -rf "$tmp_dir"' EXIT
 
-  mkdir -p "$target_directory"
-  if ! curl -fsSL --proto '=https' --tlsv1.2 \
-    --connect-timeout "$CURL_CONNECT_TIMEOUT_SECONDS" \
-    --max-time "$CURL_MAX_TIME_SECONDS" \
-    "$source_url" -o "$relative_path"; then
-    printf 'rules install failed: could not download %s\n' "$source_url" >&2
+source_root="$tmp_dir/rules"
+
+if ! git clone --depth 1 --branch "$RULES_REF" --quiet "$RULES_REPO_URL" "$source_root"; then
+  printf 'rules install failed: could not clone %s\n' "$RULES_REPO_URL" >&2
+  exit 1
+fi
+
+# 配布元の1パスを対象リポジトリへ同期する(既存の内容は置き換える)
+sync_path() {
+  relative_path="$1"
+  source_path="$source_root/$relative_path"
+  target_path="$repo_root/$relative_path"
+
+  if [ ! -e "$source_path" ]; then
+    printf 'rules install failed: expected path missing in source: %s\n' "$relative_path" >&2
     exit 1
   fi
+
+  mkdir -p "$(dirname "$target_path")"
+  rm -rf "$target_path"
+  cp -r "$source_path" "$target_path"
 }
 
-# 配布ファイルを順に取得する
-for relative_path in $INSTALLATION_FILES; do
-  download_file "$relative_path"
+# 配布パスを順に同期する
+for relative_path in $INSTALLATION_PATHS; do
+  sync_path "$relative_path"
 done
+
+# Claude Code は .claude/skills/ しか参照しないため、.agents/skills/ を実体コピーで橋渡しする
+mkdir -p "$(dirname "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH")"
+rm -rf "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH"
+cp -r "$repo_root/$SKILLS_RELATIVE_PATH" "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH"
 
 # worktree セットアップスクリプトに実行権限を付与する
 chmod 0755 scripts/setup-worktree.sh
