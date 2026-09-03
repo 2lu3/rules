@@ -9,6 +9,7 @@
 - `.pre-commit-config.yaml`: 末尾の空白、ファイル末尾、マージコンフリクト、大きな追加ファイルを確認します
 - `scripts/setup-worktree.sh`: worktree 作成時に利用するソフトから自動実行されるセットアップスクリプトです
 - `AGENTS.md`: エージェントの判断が必要なルールを定義します
+- `.agents/skills/`: Codex CLI / Cursor / Claude Code など複数のエージェントツールで共通利用するスキルの正本です。`install.sh` はこの内容を対象リポジトリの `.agents/skills/` と `.claude/skills/` の両方へ実体コピーします(symlink ではなく `cp`)。Claude Code は `.claude/skills/` しか参照しないため、この複製で橋渡ししています。両ディレクトリとも配布物専用で、`install.sh` を実行するたびに配布元の内容で置き換えられます。独自のスキルを追加したい場合は別ディレクトリを使うか、本リポジトリへの変更として提案してください
 
 `scripts/setup-worktree.sh` は共通のディスパッチャーです。元リポジトリのパスと worktree リポジトリのパスを必須引数として受け取り、worktree 側の `scripts/setup-worktree-*.sh` をファイル名順に実行します。各スクリプトには、元リポジトリの絶対パスと worktree リポジトリの絶対パスが同じ順序で渡されます。
 
@@ -32,11 +33,13 @@ pre-commit run --all-files
 
 ### 他のリポジトリへの導入
 
-対象リポジトリのルートで次を実行すると、CI、pre-commit、worktree セットアップ、エージェント向けルールを導入できます。既存の対象ファイルは更新されます。
+対象リポジトリのルートで次を実行すると、CI、pre-commit、worktree セットアップ、エージェント向けルール、スキルを導入できます。既存の対象ファイル・ディレクトリは配布元の内容で置き換えられます(ディレクトリの場合、配布元で削除されたファイルも反映されます)。
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh
 ```
+
+`install.sh` は内部で `2lu3/rules` を shallow clone し、対象ファイル・ディレクトリを `cp` でコピーします。実行には `git` と `pre-commit` が必要です(`curl` は install.sh 自体の取得のみに使い、内部処理では使いません)。
 
 導入後は、worktree 作成時に利用するソフトから `scripts/setup-worktree.sh` が自動実行される構成にしてください。このスクリプトでは pre-commit のインストールを行いません。
 
