@@ -32,4 +32,3 @@ Human context and memory are limited. MUST write code with this in mind:
 - **NEVER reference the current task, fix, or callers** in comments (`// used by X`, `// added for the Y flow`, `// see issue #123`) — that context belongs in the PR description / commit message, and rots as the codebase evolves.
 - **Don't write multi-paragraph docstrings or multi-line comment blocks** unless absolutely required by an external contract (public-API JSDoc on a published package). One short line is the cap.
 - When refactoring, **delete WHAT comments aggressively** rather than keeping them around "just in case" — the source of truth is the code.
-

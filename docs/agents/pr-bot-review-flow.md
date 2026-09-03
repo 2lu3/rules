@@ -8,4 +8,3 @@ Core principles it enforces — and which MUST hold even when triaging by hand:
 - Classify each comment: actionable fix (apply + add tests), valid nitpick (fix if cheap, else note as intentional), false positive / outdated (verify and skip with reason), rate-limited (note; re-check later).
 - MUST commit fixes as `fix: address <bot-name> review comments` (name the specific bot), batched into one commit when possible.
 - MUST post a follow-up PR comment summarizing what was addressed vs. deliberately skipped, so the human reviewer doesn't re-walk the bot threads.
-

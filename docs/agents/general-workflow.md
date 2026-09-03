@@ -36,4 +36,3 @@
   - `run` — launch and drive the project's app to see a change working / take a screenshot
   - `/pr-ui-test` — UI regression check for a PR
   - `/web-perf` — web performance investigation
-

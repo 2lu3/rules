@@ -13,4 +13,3 @@
 - MUST confirm the correct default/target branch before creating PRs
 - Read-only operations (`git status`, `git diff`, `git log`) MAY be run freely
 - SHOULD commit after each meaningful change (e.g., schema done → commit, utility functions done → commit)
-

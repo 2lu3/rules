@@ -47,4 +47,3 @@
 ## Documentation
 
 - MUST generate proper web components (Vue/Astro) for web documentation — NEVER plain markdown files, unless explicitly asked for markdown
-

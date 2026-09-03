@@ -13,4 +13,3 @@
 - [JavaScript / TypeScript](docs/agents/js.md): Node.js と TypeScript の実装規約
 - [Vue](docs/agents/vue.md): Vue とスタイリングの規約
 - [Python](docs/agents/python.md): Python 依存管理・実行規約
-
