@@ -5,7 +5,8 @@
 詳細ルールは以下に分割されています。
 
 - [General Workflow](docs/agents/general-workflow.md): 全体方針、汎用ワークフロー、デバッグ、PR作成前後の運用方針
-- [Git 運用](docs/agents/git.md): Git 操作ルール、ブランチ戦略、コミット規約
+- [Git 運用](docs/agents/git.md): Git 操作の権限ルール
+- [Ship スキル](.agents/skills/ship/SKILL.md): commit、push、PR 作成を含む Git 納品手順
 - [PR Bot Review 運用](docs/agents/pr-bot-review-flow.md): bot レビューの triage 方針
 - [Issue/Change ワークフロー](docs/agents/issue-and-change-workflow.md): 機能・修正時の手順
 - [コード品質ガイドライン](docs/agents/code-quality-guidelines.md): コード品質、DRY、コーディング方針・コメント規約
