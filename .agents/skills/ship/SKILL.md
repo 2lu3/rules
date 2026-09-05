@@ -5,56 +5,67 @@ description: Use when the user explicitly asks to ship, create a PR, or review a
 
 # Ship
 
-Use a deterministic command spine. The LLM fills semantic gaps between commands; it must not skip a gate because the change is small or urgent.
+Keywords: MUST / NEVER = mandatory. SHOULD = recommended unless there is a clear reason not to. MAY = optional.
 
-## Command spine
+## Command Procedure
 
-Run these in order and record relevant output:
+MUST run the following steps in order.
 
-1. `git status --short --branch`
-2. `git branch --show-current` and `git symbolic-ref --short HEAD`
-3. Discover and read repository instructions (`AGENTS.md`, `CONTRIBUTING.md`, relevant `.github/`, and `docs/` files).
-4. Inspect tracked and untracked intended paths, `git diff`, `git diff --cached`, and `git diff --check`.
-5. If `.pre-commit-config.yaml` exists, run `pre-commit run --all-files`; select project tests, lint, typecheck, or build commands from instructions and metadata.
-6. Re-run `git status --short --branch`, inspect the complete diff, and stage only the intended files by path.
-7. Inspect `git diff --cached`, then commit with a required prefix: `feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`.
-8. If configured, run `pre-commit run --from-ref HEAD~1 --to-ref HEAD`; then run `git status --short --branch` and `git log -1 --oneline`.
-9. Push the feature branch with `git push -u origin <branch>`.
-10. Check for an existing PR with `gh pr list --state open --head <branch>` before creating one.
-11. Create or update the PR with the confirmed target branch and a body file. Use a quoted heredoc or equivalent file-based method so Markdown backticks and shell characters are not expanded.
-12. Report the commit, branch, PR URL, validation, and pending checks.
+1. **Stage files**
+   - MUST select commit-related files individually.
+   - NEVER use `git add .`, `git add -A`, or `git add <directory>`.
+2. **Commit**
+   - MUST use one of the required commit-message prefixes: `feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`.
+   - If pre-commit fails, MUST resolve the root cause.
+   - If the problem is with pre-commit itself, MUST ask the user before changing its configuration or hooks.
+3. **Merge the latest `main`**
+   - MUST fetch the latest `main` with `git fetch origin main`.
+   - MUST merge `origin/main` into the current feature branch with `git merge origin/main`.
+   - NEVER use `git rebase`.
+   - If merge conflicts cannot be resolved, MUST stop and report instead of continuing.
+4. **Push**
+   - MUST push the current feature branch with `git push -u origin <branch>`.
+   - NEVER use `git push --force` (unconditional overwrite). `git push --force-with-lease` MAY be used only on a feature branch that you pushed yourself immediately beforehand, after a local rewrite such as `git commit --amend`. NEVER force-push in any form to `main` or a shared branch.
+5. **Create the PR**
+   - MUST confirm the correct default or target branch before creating the PR.
+   - MUST check for an existing PR for the branch through `gh api` before creating or updating one.
+   - If no open PR exists, MUST create one through `gh api`, using the confirmed target branch and a body file. For example: `gh api repos/{owner}/{repo}/pulls -F title='...' -F head='{branch}' -F base='{base}' -F 'body=@pr-body.md'`.
+   - If an open PR exists, MUST update that PR through `gh api`; NEVER create a second PR for the same branch. For example: `gh api --method PATCH repos/{owner}/{repo}/pulls/{pull_number} -F title='...' -F 'body=@pr-body.md'`.
+   - Use a quoted heredoc or equivalent file-based method to create the body so Markdown backticks and shell characters are not expanded.
+   - MUST report the commit, branch, PR URL, validation, and pending checks.
 
-## LLM decision slots
+## LLM Decision Points
 
-Between commands, decide only what cannot be hard-coded:
+Between commands, MUST decide only what cannot be hard-coded.
 
-- Scope and whether dirty files are unrelated user work.
-- Default branch and required validation commands.
-- Review classification plus commit/PR text based on the actual diff.
+- The scope of the changes and whether working-tree changes are unrelated user work.
+- The default branch and required validation commands.
+- The review classification and commit/PR text based on the actual diff.
 
-State decisions with evidence. Do not invent tests, treat saved output as a clean rerun, or use pre-edit success as final evidence.
+MUST support decisions with evidence. NEVER invent tests, treat saved output as a clean rerun, or use pre-edit success as final evidence. Commit and PR text SHOULD be concise and based on the actual diff.
 
-## Hard stops
+## Hard Stops
 
-Stop and report instead of committing, pushing, or creating a PR when:
+In the following cases, MUST stop and report instead of committing, pushing, or creating a PR.
 
 - The current branch is `main`, `master`, detached, or otherwise not a safe feature branch.
 - Unrelated changes cannot be separated confidently.
-- Merge markers, `git diff --check`, required validation, or post-validation changes are unresolved.
-- Target branch, remote, authorization, or PR ownership is unclear.
-- An open PR already exists and update intent is unclear.
+- Merge markers, `git diff --check`, required validation, or post-validation changes remain unresolved.
+- The target branch, remote, authorization, or PR ownership is unclear.
+- Multiple open PRs exist for the current branch, or the existing PR cannot be identified confidently.
 
-Never use `git add .`, `git add -A`, `git reset --hard`, `git checkout --`, `git rebase`, or force-push. Never merge the PR. An explicit ship/create-PR request authorizes delivery, not merging.
+NEVER use `git add .`, `git add -A`, `git reset --hard`, `git checkout --`, `git rebase`, or force-push. NEVER merge a PR. An explicit ship/create-PR request authorizes delivery, not merging.
 
-## PR body contract
+## PR Body Requirements
 
-Follow repository PR rules. For AI-generated changes, start with:
+MUST follow the repository's PR rules. For AI-generated changes, MUST include the following sections in this order:
 
 1. `# Summary`
 2. `# Items to Confirm / Review`
+3. `# User Prompt`
 
-Then include `# User Prompt`, approach/key decisions, and validation evidence. Reconstruct the request; do not paste a transcript. If required, put `Closes #123` on the final line.
+Under `# User Prompt`, MUST reconstruct the request instead of pasting a conversation transcript. MUST also include the approach, key decisions, and validation evidence. If required, MAY place `Closes #123` on the final line.
 
-## Final review
+## Final Review
 
-Before success, confirm final status, diff, and commit. Distinguish local validation from remote CI/review: a created PR is not merged, and pending checks are not passing.
+Before reporting completion, MUST confirm the final status, diff, and commit. MUST distinguish local validation from remote CI and review: a created PR is not merged, and pending checks are not passing.
