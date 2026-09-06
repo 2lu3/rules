@@ -1,3 +1,7 @@
+---
+applies_to: [all]
+---
+
 # General
 
 ## Global Cursor Settings
