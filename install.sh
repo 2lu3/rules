@@ -5,7 +5,7 @@ set -eu
 # 配布元、対象パスを定義する
 RULES_REPO_URL="https://github.com/2lu3/rules.git"
 RULES_REF="main"
-INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml scripts/setup-worktree.sh .agents/skills"
+INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml scripts/setup-worktree.sh .agents/skills docs"
 SKILLS_RELATIVE_PATH=".agents/skills"
 CLAUDE_SKILLS_RELATIVE_PATH=".claude/skills"
 
