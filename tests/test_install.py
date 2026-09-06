@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PROFILE_FILES = {
     'research': 'research-code.md',
     'prototype': 'prototype-code.md',
-    'app': 'app-code.md',
+    'production': 'production-code.md',
 }
 
 
@@ -162,7 +162,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
         for args in (
             (), ('--profile',), ('--profile', 'all'),
             ('--profile', 'unknown'), ('--other', 'research'),
-            ('--profile', 'app', 'extra'),
+            ('--profile', 'production', 'extra'),
         ):
             with self.subTest(args=args):
                 self.assertNotEqual(self.install(*args).returncode, 0)
@@ -171,7 +171,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
             with self.subTest(option=option):
                 result = self.install(option)
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertIn('--profile research|prototype|app', result.stdout)
+                self.assertIn('--profile research|prototype|production', result.stdout)
                 self.assertEqual(self.snapshot(), before)
 
 

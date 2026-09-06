@@ -10,7 +10,7 @@ SKILLS_RELATIVE_PATH=".agents/skills"
 CLAUDE_SKILLS_RELATIVE_PATH=".claude/skills"
 
 usage() {
-  printf 'Usage: install.sh --profile research|prototype|app\n'
+  printf 'Usage: install.sh --profile research|prototype|production\n'
 }
 
 if [ "$#" -eq 1 ] && { [ "$1" = "--help" ] || [ "$1" = "-h" ]; }; then
@@ -24,7 +24,7 @@ if [ "$#" -ne 2 ] || [ "$1" != "--profile" ]; then
 fi
 profile="$2"
 case "$profile" in
-  research|prototype|app) ;;
+  research|prototype|production) ;;
   *)
     printf 'rules install failed: unknown profile: %s\n' "$profile" >&2
     exit 1
@@ -82,7 +82,7 @@ for rule_path in "$source_root"/docs/agents/*.md; do
       count = split(scopes, values, /, */)
       for (i = 1; i <= count; i++) {
         scope = values[i]
-        if (scope != "all" && scope != "research" && scope != "prototype" && scope != "app") exit 1
+        if (scope != "all" && scope != "research" && scope != "prototype" && scope != "production") exit 1
         if (scope == "all" || scope == profile) selected = 1
       }
     }

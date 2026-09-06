@@ -17,4 +17,4 @@
 - [Python](docs/agents/python.md): Python 依存管理・実行規約
 - [研究コード](docs/agents/research-code.md): 科学的妥当性、再現性、例外伝播の方針
 - [プロトタイプコード](docs/agents/prototype-code.md): 仮説検証に必要な実装と検証の方針
-- [製品コード](docs/agents/app-code.md): 利用者との契約、境界でのエラー処理、運用の方針
+- [本番運用コード](docs/agents/production-code.md): 利用者との契約、境界でのエラー処理、運用の方針
