@@ -2,7 +2,8 @@
 
 > Keywords: **MUST** / **NEVER** = mandatory. **SHOULD** = recommended unless there is a clear reason not to. **MAY** = optional.
 
-詳細ルールは以下に分割されています。
+詳細ルールは以下に分割されています。各文書の frontmatter の `applies_to` は適用用途を示します。
+`all` は全用途共通です。用途別文書は対象コードがその用途の場合に適用します。
 
 - [General Workflow](docs/agents/general-workflow.md): 全体方針、汎用ワークフロー、デバッグ、PR作成前後の運用方針
 - [Git 運用](docs/agents/git.md): Git 操作の権限ルール
@@ -14,3 +15,6 @@
 - [JavaScript / TypeScript](docs/agents/js.md): Node.js と TypeScript の実装規約
 - [Vue](docs/agents/vue.md): Vue とスタイリングの規約
 - [Python](docs/agents/python.md): Python 依存管理・実行規約
+- [研究コード](docs/agents/research-code.md): 科学的妥当性、再現性、例外伝播の方針
+- [プロトタイプコード](docs/agents/prototype-code.md): 仮説検証に必要な実装と検証の方針
+- [製品コード](docs/agents/app-code.md): 利用者との契約、境界でのエラー処理、運用の方針

@@ -1,3 +1,7 @@
+---
+applies_to: [all]
+---
+
 # Bug Fix / Feature Request Workflow
 
 When asked to fix a bug or implement a new feature:

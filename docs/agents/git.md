@@ -1,3 +1,7 @@
+---
+applies_to: [all]
+---
+
 # Git Operations
 
 - Before running `git commit`, `git push`, `git merge`, `git rebase`, or similar state-changing commands, MUST ask for confirmation if explicit permission has not been given.

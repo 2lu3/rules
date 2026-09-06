@@ -1,3 +1,7 @@
+---
+applies_to: [all]
+---
+
 # Node.js / TypeScript
 
 ## Package Manager
