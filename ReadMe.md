@@ -8,7 +8,7 @@ Cursor、Claude Code、Codex向けの共通ルールとセットアップです�
 - `.agents/rules/`: 用途の metadata を持つルール文書
 - `.pre-commit-config.yaml`: 基本的なファイルチェック
 - `.github/workflows/ci.yml`: pre-commitのCI
-- `scripts/setup-worktree.sh`: worktree作成時のセットアップ
+- `.agents/scripts/setup-worktree.sh`: worktree作成時のセットアップ
 - `.agents/skills/`: 配布するスキルの正本
 
 ## 他のリポジトリへの導入
@@ -16,7 +16,7 @@ Cursor、Claude Code、Codex向けの共通ルールとセットアップです�
 対象リポジトリのルートで実行します。`git`と`pre-commit`は事前にインストールしてください。
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh -s -- --profile research
+curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh -s -- --profile [research / prototype / production]
 ```
 
 `-h` / `--help` で使い方を表示します。
@@ -70,10 +70,10 @@ task_tracker: github
 worktree作成時に利用するソフトから、次のスクリプトを自動実行してください。
 
 ```sh
-scripts/setup-worktree.sh /path/to/original-repository /path/to/worktree-repository
+.agents/scripts/setup-worktree.sh /path/to/original-repository /path/to/worktree-repository
 ```
 
-このスクリプトは、worktreeのブランチを確認した後、`scripts/setup-worktree-*.sh`をファイル名順に実行します。`main`、`master`、detached HEADでは実行できません。
+このスクリプトは、worktreeのブランチを確認した後、`.agents/scripts/setup-worktree-*.sh`をファイル名順に実行します。`main`、`master`、detached HEADでは実行できません。
 
 worktreeの同期や`main`のpull、pre-commitのhook登録は行いません。pre-commitのhook登録は`install.sh`が行います。
 

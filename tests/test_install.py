@@ -25,7 +25,7 @@ class InstallTest(unittest.TestCase):
         self.source.mkdir()
         for name in (
             'AGENTS.md', '.pre-commit-config.yaml', '.github',
-            'scripts', '.agents',
+            '.agents',
         ):
             original = ROOT / name
             if original.is_dir():
@@ -113,7 +113,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                 )
                 self.assertTrue((self.target / 'hook-installed').exists())
                 self.assertTrue(os.access(
-                    self.target / 'scripts/setup-worktree.sh', os.X_OK,
+                    self.target / '.agents/scripts/setup-worktree.sh', os.X_OK,
                 ))
                 self.assertEqual(
                     (self.target / '.agents/skills/ship/SKILL.md').read_bytes(),

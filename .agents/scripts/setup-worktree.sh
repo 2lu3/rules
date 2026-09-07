@@ -50,7 +50,7 @@ validate_current_branch() {
 validate_current_branch
 
 shopt -s nullglob
-setup_scripts=(scripts/setup-worktree-*.sh)
+setup_scripts=(.agents/scripts/setup-worktree-*.sh)
 
 for setup_script in "${setup_scripts[@]}"; do
   [ -f "$setup_script" ] || continue
