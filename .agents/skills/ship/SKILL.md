@@ -7,6 +7,13 @@ description: Use when the user explicitly asks to ship, create a PR, or review a
 
 An explicit ship/create-PR request authorizes commit, merging the latest `main` into the feature branch, push, and PR creation or update within the requested scope. NEVER merge a PR — merging is `close`'s responsibility, not `ship`'s.
 
+## Identify the task tracker
+
+Only applies when this PR closes a tracked task; otherwise skip it along with workflow step 7 below.
+
+1. MUST read the repository's readme (`README.md`, or the casing that repo uses, e.g. `ReadMe.md`) and look for the declaration `task_tracker: <name>`.
+2. If the declaration is absent, MUST ask the user which tracker to use. NEVER infer it from installed CLIs, connected MCP servers, issue templates, or README prose. After the user answers, SHOULD offer to add the declaration to that readme.
+
 ## Workflow
 
 1. **Update documentation**
@@ -29,8 +36,7 @@ An explicit ship/create-PR request authorizes commit, merging the latest `main` 
    - MUST write the PR title and body in Japanese, retaining the required headings below.
 7. **Move the task to review**
    - If this PR closes no tracked task, skip this step.
-   - Otherwise MUST read the repository's readme (`README.md`, or the casing that repo uses, e.g. `ReadMe.md`) for the `task_tracker: <name>` declaration; if absent, MUST ask the user which tracker to use (NEVER infer it from installed CLIs, connected MCP servers, issue templates, or README prose), and after the user answers, SHOULD offer to add the declaration to that readme.
-   - MUST move each such task's status to whatever status in that tracker means "in review" (e.g. an "In Review" column or single-select value).
+   - Otherwise, using the task tracker identified above, MUST move each such task's status to whatever status in that tracker means "in review" (e.g. an "In Review" column or single-select value).
    - If the tracker has no such status configured, MUST tell the user instead of inventing a field, label, or column.
 
 ## PR Body
