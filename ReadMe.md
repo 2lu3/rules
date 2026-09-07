@@ -52,7 +52,7 @@ metadata の欠落、不正な形式、未知の用途は、配布対象を変�
 
 ## タスク管理ツールの宣言
 
-`register` は、タスクをどこに作るかを導入先リポジトリの readme から読み取ります。
+`register` / `kickoff` / `ship` は、タスクをどこで扱うかを導入先リポジトリの readme から読み取ります。
 `install.sh` の配布対象(`AGENTS.md` や `.agents/` 配下)は再インストールのたびに置き換わるため、
 導入先固有の宣言は配布対象外の readme(`README.md`、このリポジトリでは `ReadMe.md`)に置きます。
 

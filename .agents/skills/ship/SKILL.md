@@ -27,6 +27,11 @@ An explicit ship/create-PR request authorizes commit, merging the latest `main` 
 6. **Create or update the PR**
    - MUST use `gh api` for PR operations; this environment requires it.
    - MUST write the PR title and body in Japanese, retaining the required headings below.
+7. **Move the task to review**
+   - If this PR closes no tracked task, skip this step.
+   - Otherwise MUST read the repository's readme (`README.md`, or the casing that repo uses, e.g. `ReadMe.md`) for the `task_tracker: <name>` declaration; if absent, MUST ask the user which tracker to use (NEVER infer it from installed CLIs, connected MCP servers, issue templates, or README prose), and after the user answers, SHOULD offer to add the declaration to that readme.
+   - MUST move each such task's status to whatever status in that tracker means "in review" (e.g. an "In Review" column or single-select value).
+   - If the tracker has no such status configured, MUST tell the user instead of inventing a field, label, or column.
 
 ## PR Body
 
