@@ -1,3 +1,7 @@
+---
+applies_to: [all]
+---
+
 # Vue.js
 
 - MUST use Composition API (NEVER Options API)

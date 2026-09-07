@@ -1,3 +1,7 @@
+---
+applies_to: [all]
+---
+
 # Code Quality
 
 - MUST check for duplicate code with existing codebase after completing a significant implementation, and refactor to eliminate redundancy. Prioritize readability.
@@ -19,9 +23,10 @@ Human context and memory are limited. MUST write code with this in mind:
 - NEVER use magic numbers; MUST use named constants
 - SHOULD include units in variable names when applicable (e.g., `timeout_ms`, `distance_km`)
 - MUST follow DRY principle (Don't Repeat Yourself)
-- MUST add try/catch (or language equivalent) for operations that can fail
+- MUST preserve failures and enough context to diagnose their cause; NEVER silently treat a failure as success
+- Catch exceptions only where there is a responsibility to recover, translate an error at an application boundary, or add context needed for diagnosis. Otherwise, let them propagate
   - Network requests MUST include timeout handling
-  - MUST provide meaningful error messages with context (URL, file path, etc.)
+  - Preserve the original cause when adding context (URL, file path, etc.); do not wrap an already informative exception just to standardize its format
 - MUST use existing library or standard-library functions instead of writing your own parsers/helpers (e.g. `isObject` from graphai, pydantic-settings / dotenv for `.env`). NEVER reinvent what the project already depends on. Adding a new package still requires asking first (see Change Scope Rules)
 
 ## Comments

@@ -1,3 +1,7 @@
+---
+applies_to: [research]
+---
+
 # 研究コードを扱う agent への指示
 
 ## 目的と前提

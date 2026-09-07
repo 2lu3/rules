@@ -1,3 +1,7 @@
+---
+applies_to: [all]
+---
+
 # Documentation Maintenance
 
 - MUST check README.md after changes and update it to reflect the correct specification
