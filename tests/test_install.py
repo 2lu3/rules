@@ -25,7 +25,7 @@ class InstallTest(unittest.TestCase):
         self.source.mkdir()
         for name in (
             'AGENTS.md', '.pre-commit-config.yaml', '.github',
-            'scripts', '.agents', 'docs',
+            'scripts', '.agents',
         ):
             original = ROOT / name
             if original.is_dir():
@@ -86,12 +86,12 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
         agents = (self.target / 'AGENTS.md').read_text()
         for link in re.findall(r'\]\(([^)]+)\)', agents):
             self.assertTrue((self.target / link).is_file(), link)
-        for rule in (self.target / 'docs/agents').glob('*.md'):
-            self.assertIn(f'(docs/agents/{rule.name})', agents)
+        for rule in (self.target / '.agents/rules').glob('*.md'):
+            self.assertIn(f'(.agents/rules/{rule.name})', agents)
 
     def test_profiles_and_switching(self):
         common = {
-            p.name for p in (self.source / 'docs/agents').glob('*.md')
+            p.name for p in (self.source / '.agents/rules').glob('*.md')
         } - set(PROFILE_FILES.values())
         for profile, rule in PROFILE_FILES.items():
             with self.subTest(profile=profile):
@@ -99,7 +99,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertIn(f'profile: {profile}', result.stdout)
                 installed = {
-                    p.name for p in (self.target / 'docs/agents').glob('*.md')
+                    p.name for p in (self.target / '.agents/rules').glob('*.md')
                 }
                 self.assertEqual(installed, common | {rule})
                 self.assert_links_exist()
@@ -121,17 +121,17 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                 )
 
     def test_multiple_scopes(self):
-        (self.source / 'docs/agents/shared.md').write_text(
+        (self.source / '.agents/rules/shared.md').write_text(
             '---\napplies_to: [research, prototype]\n---\n\n# Shared\n',
         )
         with (self.source / 'AGENTS.md').open('a') as file:
-            file.write('- [Shared](docs/agents/shared.md): Shared rules\n')
+            file.write('- [Shared](.agents/rules/shared.md): Shared rules\n')
         for profile in PROFILE_FILES:
             with self.subTest(profile=profile):
                 result = self.install('--profile', profile)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(
-                    (self.target / 'docs/agents/shared.md').exists(),
+                    (self.target / '.agents/rules/shared.md').exists(),
                     profile in ('research', 'prototype'),
                 )
                 self.assert_links_exist()
@@ -151,7 +151,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
             '---\napplies_to: ["research"]\n---\n',
         ):
             with self.subTest(metadata=metadata):
-                (self.source / 'docs/agents/prototype-code.md').write_text(metadata)
+                (self.source / '.agents/rules/prototype-code.md').write_text(metadata)
                 result = self.install('--profile', 'research')
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn('invalid applies_to frontmatter', result.stderr)
