@@ -5,7 +5,7 @@ Cursor、Claude Code、Codex向けの共通ルールとセットアップです�
 ## 含まれるもの
 
 - `AGENTS.md`: エージェント向けルール
-- `docs/agents/`: 用途の metadata を持つルール文書
+- `.agents/rules/`: 用途の metadata を持つルール文書
 - `.pre-commit-config.yaml`: 基本的なファイルチェック
 - `.github/workflows/ci.yml`: pre-commitのCI
 - `scripts/setup-worktree.sh`: worktree作成時のセットアップ
@@ -24,7 +24,7 @@ curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh -s 
 `install.sh` は `all` と指定用途の文書を選択し、`AGENTS.md` のリンクを揃え、pre-commit の Git hook を登録します。
 `all` は全用途共通の文書を示す metadata で、インストール用途としては指定しません。
 
-既存の配布対象は置き換えられます。`docs/` 内の置き換え対象は `docs/agents/` のみです。
+既存の配布対象は置き換えられます。`.agents/rules/` は既存の内容を全て置き換えます。
 用途を切り替える場合も同じコマンドで再実行します。前の用途の文書は残りません。
 一回のインストールで選べる用途は一つです。
 
@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh -s 
 
 ## ルールの metadata
 
-`docs/agents/*.md` は、ファイル先頭に次の frontmatter を必ず置きます。
+`.agents/rules/*.md` は、ファイル先頭に次の frontmatter を必ず置きます。
 
 ```yaml
 ---
@@ -48,7 +48,7 @@ applies_to: [all]
 キーは行頭に置き、コロンの後は空白一つ、値は `all` / `research` / `prototype` / `production` を使います。
 汎用 YAML パーサーは使用せず、引用符や複数行リストには対応しません。
 metadata の欠落、不正な形式、未知の用途は、配布対象を変更する前にエラーになります。
-文書を追加するときは `AGENTS.md` にも `- [表示名](docs/agents/ファイル名.md): 説明` の形式でリンクを追加してください。
+文書を追加するときは `AGENTS.md` にも `- [表示名](.agents/rules/ファイル名.md): 説明` の形式でリンクを追加してください。
 
 ## worktree setup
 

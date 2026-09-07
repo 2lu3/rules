@@ -5,7 +5,7 @@ set -eu
 # 配布元、対象パスを定義する
 RULES_REPO_URL="https://github.com/2lu3/rules.git"
 RULES_REF="main"
-INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml scripts/setup-worktree.sh .agents/skills docs/agents"
+INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml scripts/setup-worktree.sh .agents/skills .agents/rules"
 SKILLS_RELATIVE_PATH=".agents/skills"
 CLAUDE_SKILLS_RELATIVE_PATH=".claude/skills"
 
@@ -67,7 +67,7 @@ fi
 # 配置前に全 metadata を検証し、選択結果を一時領域で組み立てる。
 selected_rules="$tmp_dir/selected-rules"
 mkdir -p "$selected_rules"
-for rule_path in "$source_root"/docs/agents/*.md; do
+for rule_path in "$source_root"/.agents/rules/*.md; do
   if ! selected="$(awk -v profile="$profile" '
     NR == 1 {
       if ($0 != "---") exit 1
@@ -102,8 +102,8 @@ done
 selected_agents="$tmp_dir/AGENTS.md"
 while IFS= read -r line || [ -n "$line" ]; do
   case "$line" in
-    '- ['*'](docs/agents/'*')'*)
-      rule_name="${line#*](docs/agents/}"
+    '- ['*'](.agents/rules/'*')'*)
+      rule_name="${line#*](.agents/rules/}"
       rule_name="${rule_name%%)*}"
       if [ ! -f "$selected_rules/$rule_name" ]; then
         continue
@@ -114,8 +114,8 @@ while IFS= read -r line || [ -n "$line" ]; do
 done < "$source_root/AGENTS.md" > "$selected_agents"
 printf '\n適用用途: `%s`。`all` と `%s` の文書をインストール済みです。\n' "$profile" "$profile" >> "$selected_agents"
 mv "$selected_agents" "$source_root/AGENTS.md"
-rm -rf "$source_root/docs/agents"
-mv "$selected_rules" "$source_root/docs/agents"
+rm -rf "$source_root/.agents/rules"
+mv "$selected_rules" "$source_root/.agents/rules"
 
 # 配布元の1パスを対象リポジトリへ同期する(既存の内容は置き換える)
 sync_path() {
