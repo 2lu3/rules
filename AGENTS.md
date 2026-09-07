@@ -7,13 +7,8 @@
 
 - [General Workflow](.agents/rules/general-workflow.md): 全体方針、汎用ワークフロー、デバッグ、PR作成前後の運用方針
 - [Git 運用](.agents/rules/git.md): Git 操作の権限ルール
-- [Ship スキル](.agents/skills/ship/SKILL.md): commit、push、PR 作成を含む Git 納品手順
-- [PR Bot Review 運用](.agents/rules/pr-bot-review-flow.md): bot レビューの triage 方針
-- [Issue/Change ワークフロー](.agents/rules/issue-and-change-workflow.md): 機能・修正時の手順
-- [コード品質ガイドライン](.agents/rules/code-quality-guidelines.md): コード品質、DRY、コーディング方針・コメント規約
-- [ドキュメント保守](.agents/rules/documentation-maintenance.md): ドキュメント更新規則
-- [JavaScript / TypeScript](.agents/rules/js.md): Node.js と TypeScript の実装規約
-- [Vue](.agents/rules/vue.md): Vue とスタイリングの規約
+- [Register スキル](.agents/skills/register/SKILL.md): 計画をタスクとして登録し、実装の source of truth にする手順
+- [Ship スキル](.agents/skills/ship/SKILL.md): ドキュメント更新、commit、push、PR 作成を含む納品手順
 - [Python](.agents/rules/python.md): Python 依存管理・実行規約
 - [研究コード](.agents/rules/research-code.md): 科学的妥当性、再現性、例外伝播の方針
 - [プロトタイプコード](.agents/rules/prototype-code.md): 仮説検証に必要な実装と検証の方針

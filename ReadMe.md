@@ -50,6 +50,21 @@ applies_to: [all]
 metadata の欠落、不正な形式、未知の用途は、配布対象を変更する前にエラーになります。
 文書を追加するときは `AGENTS.md` にも `- [表示名](.agents/rules/ファイル名.md): 説明` の形式でリンクを追加してください。
 
+## タスク管理ツールの宣言
+
+`register` は、タスクをどこに作るかを導入先リポジトリの readme から読み取ります。
+`install.sh` の配布対象(`AGENTS.md` や `.agents/` 配下)は再インストールのたびに置き換わるため、
+導入先固有の宣言は配布対象外の readme(`README.md`、このリポジトリでは `ReadMe.md`)に置きます。
+
+```markdown
+task_tracker: github
+```
+
+`task_tracker` はタスク管理ツール名(`github` / `linear` / `jira` など)です。
+
+宣言が無い場合、スキルはユーザーに確認します。導入済みの CLI、接続中の MCP、issue テンプレートの有無から
+推測することはしません。このリポジトリ自身のタスク管理は上記の通り GitHub Issues です。
+
 ## worktree setup
 
 worktree作成時に利用するソフトから、次のスクリプトを自動実行してください。
