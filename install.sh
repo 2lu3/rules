@@ -5,7 +5,7 @@ set -eu
 # 配布元、対象パスを定義する
 RULES_REPO_URL="https://github.com/2lu3/rules.git"
 RULES_REF="main"
-INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml scripts/setup-worktree.sh .agents/skills .agents/rules"
+INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml .agents/scripts .agents/skills .agents/rules"
 SKILLS_RELATIVE_PATH=".agents/skills"
 CLAUDE_SKILLS_RELATIVE_PATH=".claude/skills"
 
@@ -144,7 +144,7 @@ rm -rf "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH"
 cp -r "$repo_root/$SKILLS_RELATIVE_PATH" "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH"
 
 # worktree セットアップスクリプトに実行権限を付与する
-chmod 0755 scripts/setup-worktree.sh
+chmod 0755 .agents/scripts/setup-worktree.sh
 
 # リポジトリの共有 Git hook に pre-commit を登録する
 if ! pre-commit install --install-hooks; then
