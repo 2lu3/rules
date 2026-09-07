@@ -10,6 +10,7 @@
 - [Register スキル](.agents/skills/register/SKILL.md): 計画をタスクとして登録し、実装の source of truth にする手順
 - [Kickoff スキル](.agents/skills/kickoff/SKILL.md): 着手時にタスクのステータスを「進行中」相当へ移動する手順
 - [Ship スキル](.agents/skills/ship/SKILL.md): ドキュメント更新、commit、push、PR 作成、タスクのステータスを「レビュー中」相当へ移動する納品手順
+- [Close スキル](.agents/skills/close/SKILL.md): PR をマージし、タスクのステータスを「完了」相当へ移動する手順
 - [Python](.agents/rules/python.md): Python 依存管理・実行規約
 - [研究コード](.agents/rules/research-code.md): 科学的妥当性、再現性、例外伝播の方針
 - [プロトタイプコード](.agents/rules/prototype-code.md): 仮説検証に必要な実装と検証の方針

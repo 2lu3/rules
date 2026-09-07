@@ -30,7 +30,7 @@ applies_to: [all]
 
 - Prefer these skills over doing the work by hand:
 
-  - **Task registration / delivery** → `register`, `kickoff`, `ship`
+  - **Task registration / delivery** → `register`, `kickoff`, `ship`, `close`
   - **Code review / refactor / security** → `/code-review`, `/simplify`, `/security-review`
   - **Web run / perf** → `run`, `/web-perf` (see Web Design & Debugging)
 

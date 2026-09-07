@@ -5,7 +5,7 @@ description: Use when the user explicitly asks to ship, create a PR, or review a
 
 # Ship
 
-An explicit ship/create-PR request authorizes commit, merging the latest `main` into the feature branch, push, and PR creation or update within the requested scope. NEVER merge a PR.
+An explicit ship/create-PR request authorizes commit, merging the latest `main` into the feature branch, push, and PR creation or update within the requested scope. NEVER merge a PR — merging is `close`'s responsibility, not `ship`'s.
 
 ## Workflow
 
