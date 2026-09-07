@@ -11,6 +11,7 @@ applies_to: [all]
 ## General
 
 - When today's date is needed, MUST run the `date` command to get it — NEVER rely on model's internal knowledge
+- MUST VERIFY the actual implementation before writing API/tool documentation — NEVER guess API names or parameters
 
 ## Change Scope Rules
 
@@ -29,14 +30,12 @@ applies_to: [all]
 
 - Prefer these skills over doing the work by hand:
 
-  - **PR bot review triage** → `/gh-review-loop` (see PR Bot Review Handling)
-  - **Code review / refactor / security** → `/code-review`, `/simplify`, `/security-review` (see Code Quality)
-  - **Web verify / run / UI test / perf** → `/verify`, `run`, `/pr-ui-test`, `/web-perf` (see Web Design & Debugging)
+  - **Task registration / delivery** → `register`, `ship`
+  - **Code review / refactor / security** → `/code-review`, `/simplify`, `/security-review`
+  - **Web run / perf** → `run`, `/web-perf` (see Web Design & Debugging)
 
 ## Web Design & Debugging
 
 - MUST prefer the dedicated skills over driving a browser by hand:
-  - `/verify` — exercise a change end-to-end and observe real behavior (run before committing nontrivial UI changes)
   - `run` — launch and drive the project's app to see a change working / take a screenshot
-  - `/pr-ui-test` — UI regression check for a PR
   - `/web-perf` — web performance investigation
