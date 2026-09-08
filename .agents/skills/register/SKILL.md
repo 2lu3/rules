@@ -16,6 +16,8 @@ Turn a plan agreed with the user into a tracked task that becomes the source of 
 
 1. **Confirm the plan**
    - MUST have discussed and clarified the requirements with the user before creating anything.
+   - MUST confirm that the plan declares exactly one execution mode: `Execution mode: single` or `Execution mode: multi`.
+   - If the execution mode is missing or unclear, MUST ask the user and stop before creating the task. NEVER infer the mode during registration.
 2. **Create the task**
    - MUST create one task in the identified tracker, titled with a summary of the work.
 3. **Write the task description**
