@@ -57,13 +57,13 @@ metadata の欠落、不正な形式、未知の用途は、配布対象を変�
 導入先固有の宣言は配布対象外の readme(`README.md`、このリポジトリでは `ReadMe.md`)に置きます。
 
 ```markdown
-task_tracker: github
+task_tracker: linear
 ```
 
 `task_tracker` はタスク管理ツール名(`github` / `linear` / `jira` など)です。
 
 宣言が無い場合、スキルはユーザーに確認します。導入済みの CLI、接続中の MCP、issue テンプレートの有無から
-推測することはしません。このリポジトリ自身のタスク管理は上記の通り GitHub Issues です。
+推測することはしません。このリポジトリ自身のタスク管理は上記の通り Linear です。
 
 ## worktree setup
 
