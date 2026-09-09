@@ -5,7 +5,7 @@ description: Use when the user explicitly asks to merge the PR that `ship` creat
 
 # Close
 
-An explicit merge/close request authorizes merging the PR that `ship` created and moving the task it closes to "done". This is the last step of the `register` → `kickoff` → `ship` → `close` lifecycle, so the task's status stays a reliable signal of what is actually happening. `ship` NEVER merges a PR — merging is this skill's responsibility.
+An explicit merge/close request authorizes merging the draft PR that `ship` created and moving the task it closes to "done". This is the last step of the `register` → `ship` → `close` lifecycle. `ship` NEVER merges a PR — merging is this skill's responsibility.
 
 ## Preconditions
 
