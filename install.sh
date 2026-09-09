@@ -8,6 +8,7 @@ RULES_REF="main"
 INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml .agents/scripts .agents/skills .agents/rules"
 SKILLS_RELATIVE_PATH=".agents/skills"
 CLAUDE_SKILLS_RELATIVE_PATH=".claude/skills"
+CODEX_SKILLS_RELATIVE_PATH=".codex/skills"
 
 usage() {
   printf 'Usage: install.sh --profile research|prototype|production\n'
@@ -138,10 +139,12 @@ for relative_path in $INSTALLATION_PATHS; do
   sync_path "$relative_path"
 done
 
-# Claude Code は .claude/skills/ しか参照しないため、.agents/skills/ を実体コピーで橋渡しする
-mkdir -p "$(dirname "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH")"
-rm -rf "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH"
-cp -r "$repo_root/$SKILLS_RELATIVE_PATH" "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH"
+# 各エージェントツールが参照するスキルディレクトリへ実体コピーで橋渡しする
+for target_skills_path in "$CLAUDE_SKILLS_RELATIVE_PATH" "$CODEX_SKILLS_RELATIVE_PATH"; do
+  mkdir -p "$(dirname "$repo_root/$target_skills_path")"
+  rm -rf "$repo_root/$target_skills_path"
+  cp -r "$repo_root/$SKILLS_RELATIVE_PATH" "$repo_root/$target_skills_path"
+done
 
 # worktree セットアップスクリプトに実行権限を付与する
 chmod 0755 .agents/scripts/setup-worktree.sh

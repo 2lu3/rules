@@ -119,6 +119,10 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                     (self.target / '.agents/skills/ship/SKILL.md').read_bytes(),
                     (self.target / '.claude/skills/ship/SKILL.md').read_bytes(),
                 )
+                self.assertEqual(
+                    (self.target / '.agents/skills/ship/SKILL.md').read_bytes(),
+                    (self.target / '.codex/skills/ship/SKILL.md').read_bytes(),
+                )
 
     def test_multiple_scopes(self):
         (self.source / '.agents/rules/shared.md').write_text(

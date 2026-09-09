@@ -14,8 +14,8 @@
 
 ## 配布の仕組み
 
-`install.sh` はこのディレクトリの内容を丸ごと、対象リポジトリの `.agents/skills/` と `.claude/skills/` の両方へ `cp` で実体コピーします。Claude Code は `.claude/skills/` しか読み込まないため、この複製によって同じスキルを橋渡ししています(symlink ではなく実体コピーなので、Windows 環境や `core.symlinks` 設定に依存しません)。
+`install.sh` はこのディレクトリの内容を丸ごと、対象リポジトリの `.agents/skills/`、`.claude/skills/`、`.codex/skills/` へ `cp` で実体コピーします。Claude Code は `.claude/skills/`、Codex CLI は `.codex/skills/` を参照するため、この複製によって同じスキルを橋渡ししています(symlink ではなく実体コピーなので、Windows 環境や `core.symlinks` 設定に依存しません)。
 
 ## 注意
 
-`.agents/skills/` と `.claude/skills/` はどちらも配布物専用です。対象リポジトリ側でこの配下を直接編集しても、次回 `install.sh` 実行時にディレクトリごと置き換えられます。独自のスキルを追加したい場合は別ディレクトリを使うか、本リポジトリ (`2lu3/rules`) への変更を提案してください。
+`.agents/skills/`、`.claude/skills/`、`.codex/skills/` はいずれも配布物専用です。対象リポジトリ側でこの配下を直接編集しても、次回 `install.sh` 実行時にディレクトリごと置き換えられます。独自のスキルを追加したい場合は別ディレクトリを使うか、本リポジトリ (`2lu3/rules`) への変更を提案してください。
