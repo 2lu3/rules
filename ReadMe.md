@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh -s 
 用途を切り替える場合も同じコマンドで再実行します。前の用途の文書は残りません。
 一回のインストールで選べる用途は一つです。
 
-`.agents/skills/`は`.claude/skills/`にもコピーされます。Claude Codeは後者を参照します。
+`.agents/skills/`は`.claude/skills/`と`.codex/skills/`にもコピーされます。Claude Codeは前者、Codex CLIは後者を参照します。
 
 ## ルールの metadata
 
