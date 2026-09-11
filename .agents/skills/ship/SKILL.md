@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Use when the user explicitly asks to ship or create a PR — starts and implements the tracked task when one is provided, or reports that no task is specified and ships the requested work without task tracking; then moves tracked work to review and creates or updates a draft PR.
+description: Use when the user explicitly asks to ship or create a PR — starts and implements the tracked task when one is provided, or reports that no task is specified and ships the requested work without task tracking; then creates or updates a draft PR.
 ---
 
 # Ship
@@ -12,12 +12,8 @@ An explicit ship/create-PR request runs the full task-start-through-draft-PR lif
 1. MUST use the task the user explicitly names, or the task registered earlier in this conversation (e.g. by `register`).
 2. If neither is available, MUST output `タスクが明記されていません。` and continue in no-task mode. MUST NOT ask a follow-up question or guess the task from the current branch name or other contextual hints.
 3. In no-task mode, MUST NOT change task status, create task metadata, or add a closing reference. The user's explicit request is the implementation scope.
-4. When a target task exists, MUST actually change its status to "in progress" before implementation and to "in review" after implementation and validation, as specified in the workflow below.
 
-## Identify the task tracker
-
-1. When a target task exists, MUST read the repository's readme and look for the declaration of task tracker.
-2. If the declaration is absent, MUST ask the user which tracker to use. NEVER infer it from installed CLIs, connected MCP servers, issue templates, or README prose. After the user answers, SHOULD offer to add the declaration to that readme.
+MUST follow [タスクの状態管理](../../../.agents/rules/task-management.md) for tracker identification and task status updates.
 
 ## Determine the execution mode
 
@@ -34,33 +30,25 @@ An explicit ship/create-PR request runs the full task-start-through-draft-PR lif
 
 ## Workflow
 
-1. **Move the task to in progress**
-   - When a target task exists, MUST move its status to whatever status in that tracker means "in progress" (e.g. an "In Progress" column or single-select value).
-   - In no-task mode, MUST skip this step.
-   - If a target task exists but the tracker has no such status configured, MUST tell the user instead of inventing a field, label, or column.
-2. **Implement the task**
+1. **Implement the task**
    - When a target task exists, MUST follow its execution mode and registered implementation plan above.
    - In no-task mode, MUST follow the user's explicit request and the current requested scope.
-3. **Update documentation**
+2. **Update documentation**
    - MUST check the repository's readme (`README.md`, or the casing that repo uses) and `docs/` when specs, commands, or options changed, and update them to match the implementation.
    - MUST keep command examples, options, and usage instructions accurate.
    - MUST update CLAUDE.md/AGENTS.md when they carry documentation affected by the change.
-4. **Stage files**
+3. **Stage files**
    - MUST select commit-related files.
-5. **Commit**
+4. **Commit**
    - MUST use one of the commit-message prefixes: `feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`.
    - NEVER bypass pre-commit hooks.
-6. **Merge the latest `main`**
+5. **Merge the latest `main`**
    - MUST fetch and merge the latest `main` into the feature branch before pushing, resolving conflicts locally.
    - NEVER use `git rebase`.
-7. **Push**
+6. **Push**
    - MUST push the feature branch.
    - NEVER force-push, including `--force-with-lease`.
-8. **Move the task to review**
-   - When a target task exists, MUST move its status to whatever status in that tracker means "in review" (e.g. an "In Review" column or single-select value).
-   - In no-task mode, MUST skip this step.
-   - If a target task exists but the tracker has no such status configured, MUST tell the user instead of inventing a field, label, or column.
-9. **Create or update the draft PR**
+7. **Create or update the draft PR**
    - MUST use `gh api` for PR operations; this environment requires it.
    - If no matching open PR exists, MUST create a new PR with `draft: true`.
    - If an existing PR is being updated and it is not already a draft, MUST convert it with the GitHub GraphQL `convertPullRequestToDraft` mutation through `gh api graphql` before completing the workflow.

@@ -6,9 +6,10 @@
 `all` は全用途共通です。用途別文書は対象コードがその用途の場合に適用します。
 
 - [General Workflow](.agents/rules/general-workflow.md): 全体方針、汎用ワークフロー、デバッグ、PR作成前後の運用方針
+- [タスクの状態管理](.agents/rules/task-management.md): 担当タスクの状態更新とトラッカーの確認
 - [Git 運用](.agents/rules/git.md): Git 操作の権限ルール
 - [Register スキル](.agents/skills/register/SKILL.md): 計画をタスクとして登録し、実装の source of truth にする手順
-- [Ship スキル](.agents/skills/ship/SKILL.md): タスクを「進行中」相当へ移動して実装し、「レビュー中」相当へ移動したうえでDraft PRを作成する一連の手順
+- [Ship スキル](.agents/skills/ship/SKILL.md): 実装からDraft PR作成までの一連の手順
 - [Close スキル](.agents/skills/close/SKILL.md): PR をマージし、タスクのステータスを「完了」相当へ移動する手順
 - [Python](.agents/rules/python.md): Python 依存管理・実行規約
 - [研究コード](.agents/rules/research-code.md): 科学的妥当性、再現性、例外伝播の方針
