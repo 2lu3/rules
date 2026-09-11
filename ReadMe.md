@@ -62,14 +62,17 @@ task_tracker: linear
 
 `task_tracker` はタスク管理ツール名(`github` / `linear` / `jira` など)です。
 
+`register` は、実行モードが未指定で `single` を推奨する場合、モードの確認を挟まず登録します。
+`multi` が適切な場合だけ理由を添えて提案し、返答を待ちます。明示された指定を優先し、
+タスクには `Execution mode: single` または `Execution mode: multi` を記録します。
+
 対象タスクがあるのに宣言が無い場合、スキルはユーザーに確認します。導入済みの CLI、接続中の MCP、issue
 テンプレートの有無から推測することはしません。このリポジトリ自身のタスク管理は上記の通り Linear です。
 
 `ship` / `close` の呼び出しにタスクが明記されていない場合は、`タスクが明記されていません。` と出力し、
 タスクのステータス変更や closing reference の追加を行わずに処理を続けます。`ship` は明示された変更の
 Draft PR 作成まで、`close` は対象 PR のマージまでを行います。
-対象タスクがある場合は、`ship` が実装前に「進行中」、実装・検証後に「レビュー中」へ変更し、
-`close` がPRマージ後に「完了」へ変更します。自動遷移する tracker でも、実際にその状態になったことを確認します。
+対象タスクの状態更新とトラッカーの確認は、共通の[タスクの状態管理](.agents/rules/task-management.md)に従います。
 
 ## worktree setup
 
