@@ -19,6 +19,10 @@ applies_to: [all]
 - MUST ask first if something additional seems needed
 - MUST keep PR comments, commit messages, and documentation concise unless asked otherwise
 
+## Work Recap
+
+- After finishing work, MUST briefly explain what was done in the final response using bullet points
+
 ## Debugging Approach
 
 - MUST diagnose the ROOT CAUSE before attempting fixes
