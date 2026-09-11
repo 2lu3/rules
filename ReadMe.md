@@ -72,8 +72,7 @@ task_tracker: linear
 `ship` / `close` の呼び出しにタスクが明記されていない場合は、`タスクが明記されていません。` と出力し、
 タスクのステータス変更や closing reference の追加を行わずに処理を続けます。`ship` は明示された変更の
 Draft PR 作成まで、`close` は対象 PR のマージまでを行います。
-対象タスクがある場合は、`ship` が実装前に「進行中」、実装・検証後に「レビュー中」へ変更し、
-`close` がPRマージ後に「完了」へ変更します。自動遷移する tracker でも、実際にその状態になったことを確認します。
+対象タスクの状態更新とトラッカーの確認は、共通の[タスクの状態管理](.agents/rules/task-management.md)に従います。
 
 ## worktree setup
 
