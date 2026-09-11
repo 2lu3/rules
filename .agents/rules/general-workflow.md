@@ -19,6 +19,14 @@ applies_to: [all]
 - MUST ask first if something additional seems needed
 - MUST keep PR comments, commit messages, and documentation concise unless asked otherwise
 
+## Creating and Revising Outputs
+
+- When creating or revising explanations, proposals, plans, code, or other outputs, MUST consider who will use them, what information they can access, and what they need to understand, decide, or do. This includes both people and other agents.
+- MUST distinguish information available to the intended user from context available only in the current conversation, and include the context needed for correct understanding, decisions, and execution. SHOULD adapt terminology and detail to the user's knowledge and working environment.
+- MUST integrate revision requests into the overall purpose, requirements, and constraints. MUST judge each element's necessity, placement, length, and emphasis by its role in the final output. NEVER treat the fact that something was requested or corrected as evidence of its importance.
+- MUST consider what the intended user would assume or do if a statement were omitted. MUST state conditions needed to prevent unintended interpretations or actions, and remove statements that serve no purpose in the final output.
+- Before delivering, MUST check whether the intended user can reach the intended understanding, decisions, and actions using only the information actually available to them.
+
 ## Work Recap
 
 - After finishing work, MUST briefly explain what was done in the final response using bullet points
