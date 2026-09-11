@@ -62,6 +62,10 @@ task_tracker: linear
 
 `task_tracker` はタスク管理ツール名(`github` / `linear` / `jira` など)です。
 
+`register` は、実行モードが未指定で `single` を推奨する場合、モードの確認を挟まず登録します。
+`multi` が適切な場合だけ理由を添えて提案し、返答を待ちます。明示された指定を優先し、
+タスクには `Execution mode: single` または `Execution mode: multi` を記録します。
+
 対象タスクがあるのに宣言が無い場合、スキルはユーザーに確認します。導入済みの CLI、接続中の MCP、issue
 テンプレートの有無から推測することはしません。このリポジトリ自身のタスク管理は上記の通り Linear です。
 
