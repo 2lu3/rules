@@ -12,13 +12,13 @@ An explicit `land` request, or a request to create a PR from existing changes an
 1. **Establish the requested scope**
    - Inspect the current changes and conversation to identify what the user wants delivered.
    - MUST NOT implement features, fix code, or update implementation documentation. If unfinished work or validation failures require changes, report the blocker and stop delivery.
-   - Follow ship's target-task and tracker identification rules. A task is optional; do not create one just to run this workflow.
+   - Follow ship's target-task identification rules and [タスクの状態管理](../../../.agents/rules/task-management.md) for tracker identification and status updates. A task is optional; do not create one just to run this workflow.
    - When a task exists, check the existing changes against its scope and manage its review and done statuses. Skip implementation execution modes and the in-progress transition because implementation has already happened.
 2. **Validate and create the PR**
    - Review the existing diff, check documentation consistency, and run relevant validation without applying automatic fixes.
-   - Follow ship's stage, commit, latest-main merge, push, move-to-review, and draft-PR steps, including its PR body requirements and task closing reference.
+   - Follow ship's stage, commit, latest-main merge, push, and draft-PR steps, including its PR body requirements and task closing reference.
    - If merging the latest main requires manual conflict resolution, stop and report it; do not make implementation changes to resolve conflicts in this workflow.
-   - When a task exists, actually move it to in review. In no-task mode, skip tracker operations and closing references.
+   - After creating or updating the PR, move the associated task to in review and verify its status according to the shared task-management rules. In no-task mode, skip tracker operations and closing references.
    - Do not proceed to close if validation or PR delivery is incomplete.
 3. **Run close on that PR**
    - Continue without asking for another merge confirmation: the combined request already authorizes merging. Do not pause for optional human review.
