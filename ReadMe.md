@@ -84,6 +84,7 @@ task_tracker: linear
 
 `flow c` はPR作成後に停止し、`flow a` はchecks・reviews・mergeabilityを確認してからmergeします。
 実装済みの変更をPR作成からマージまで進める依頼も、`flow a` 相当として扱います。
+`origin/main` の取り込みでconflictが起きた場合は、機械的に確定できるconflict、または双方の変更意図が両立すると確認できるconflictだけを解決します。意図が曖昧・衝突・検証不能なconflictはmerge中のまま人間レビューに回します。
 
 ## worktree setup
 

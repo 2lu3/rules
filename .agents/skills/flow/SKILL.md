@@ -87,13 +87,28 @@ Reach the reviewable Draft PR endpoint. Run any missing `p` and `d` prerequisite
 
 1. Run the relevant validation and stop on validation failures that are not an expected natural downstream failure.
 2. Selectively stage the files belonging to this work. Use a commit message beginning with `feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`. Never bypass pre-commit hooks.
-3. Fetch the latest `origin/main` and merge it into the feature branch. Never rebase. Resolve conflicts locally and validate again.
+3. Fetch the latest `origin/main` and merge it into the feature branch. Never rebase. Follow the [main-merge conflict policy](#main-merge-conflict-policy); resolve mechanically safe or semantically compatible conflicts and stop for human review when the intent is unclear, incompatible, or not verifiable.
 4. Push the feature branch. Never force-push.
 5. Query open PRs with `gh api`. Update the one identified PR for the current branch, or create exactly one new PR with `draft: true`. If an existing matching PR is not a draft, convert it to a draft through the GitHub GraphQL `convertPullRequestToDraft` mutation before updating it.
 6. Write the PR title and body in Japanese. The body must contain, in order, `# Summary`, `# Items to Confirm / Review`, and `# User Prompt`. Include the implementation approach, validation, and key decisions. Reuse the registered task's `# User Prompt` when one exists. A tracked task's closing reference belongs at the very end; omit it in no-task mode.
 7. After the PR is created or updated successfully, move the tracked task to the tracker's In Review equivalent and verify it. Do not change task metadata beyond the status transition.
 
 `c` NEVER merges a PR. If multiple PRs could match or ownership cannot be determined confidently, stop instead of creating a second PR.
+
+### Main-merge conflict policy
+
+This policy applies to the `origin/main` merge in `flow c` and to the `c` prerequisite of `flow a`.
+
+1. Before fetching or merging, run `git status --short` and confirm that there are no unrelated working-tree changes. After a conflict, keep the merge in progress and enumerate the unmerged paths with `git diff --name-only --diff-filter=U`. Inspect each path's combined diff with `git diff --cc -- <path>` and its stage 1 (merge base), stage 2 (ours), and stage 3 (theirs) entries.
+2. A path is eligible for automatic resolution only when it is a normal text file with all three stages present and the file mode is the same in every stage, and one of these mechanical facts is true:
+   - stage 2 is exactly equal to stage 1: take stage 3;
+   - stage 3 is exactly equal to stage 1: take stage 2;
+   - stage 2 and stage 3 are byte-for-byte identical: take either side.
+   Compare the stage entries before choosing a side, for example by checking the mode and blob IDs from `git ls-files -u -- <path>`. Once an equality is established, use `git checkout --theirs -- <path>` or `git checkout --ours -- <path>` only for that individual path, then `git add -- <path>`. Do not infer safety from file age, line count, or which side is `main`.
+3. For a path that is not covered by mechanical equality, recover both sides' intent before editing: compare the merge base, feature branch (ours), `main` (theirs), relevant commits, surrounding code or documentation, and affected tests. State what behavior or contract each side is adding, removing, or preserving. If the intents are compatible, construct a result that preserves both intents even when the conflict hunk overlaps; do not simply choose the newer side or delete one change. For generated or lock files, reconcile the source and regenerate them instead of hand-editing the generated output.
+4. A semantic resolution is safe only when every conflict hunk has an explainable intent-level resolution and the relevant validation covers the affected behavior. Include the resolution rationale in the flow report or PR review notes. If the intents conflict, the intent is ambiguous, a rename/delete or binary/submodule/file-mode conflict cannot be mechanically resolved, or validation cannot establish the result, leave the merge in progress and request human review.
+5. After resolving mechanically safe or semantically compatible paths individually, verify that no unmerged paths remain, `git diff --cached --check` passes, no conflict markers remain, and the relevant tests pass. Only then run `GIT_EDITOR=true git merge --continue`, rerun the relevant validation on the completed merge, and inspect `git status --short`.
+6. Do not use `git merge -X ours/theirs`, `git checkout --ours/--theirs .`, broad marker replacement, `git merge --abort`, or any other blanket choice to avoid the intent review. For a human-review case, do not commit or push; report the unmerged path list, combined diffs, inferred intents, and the unresolved question.
 
 ## `flow a` / `flow auto`
 

@@ -147,6 +147,39 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
             flow_skill,
         )
 
+    def test_flow_main_merge_has_safe_conflict_policy(self):
+        flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
+
+        for requirement in (
+            '### Main-merge conflict policy',
+            'git diff --name-only --diff-filter=U',
+            'stage 1 (merge base), stage 2 (ours), and stage 3 (theirs)',
+            'stage 2 is exactly equal to stage 1',
+            'stage 3 is exactly equal to stage 1',
+            'stage 2 and stage 3 are byte-for-byte identical',
+            'git ls-files -u -- <path>',
+            'git add -- <path>',
+            'recover both sides\' intent before editing',
+            'If the intents are compatible',
+            'preserves both intents',
+            'relevant commits, surrounding code or documentation, and affected tests',
+            'every conflict hunk has an explainable intent-level resolution',
+            'reconcile the source and regenerate them',
+            'git diff --cached --check',
+            'GIT_EDITOR=true git merge --continue',
+            'leave the merge in progress',
+            'request human review',
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, flow_skill)
+
+        for forbidden in (
+            'git merge -X ours/theirs',
+            'git checkout --ours/--theirs .',
+        ):
+            with self.subTest(forbidden=forbidden):
+                self.assertIn(forbidden, flow_skill)
+
     def test_multiple_scopes(self):
         (self.source / '.agents/rules/shared.md').write_text(
             '---\napplies_to: [research, prototype]\n---\n\n# Shared\n',
