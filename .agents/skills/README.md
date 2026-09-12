@@ -10,7 +10,7 @@
 .agents/skills/<skill-name>/SKILL.md
 ```
 
-`register`（タスク登録）、`ship`（Draft PR 作成まで）、`close`（PR マージ）、`land`（PR 作成からマージまで）を配布します。
+現在は、計画・実装・Draft PR作成・mergeまでを扱う `flow` スキルを配布しています。
 
 ## 配布の仕組み
 

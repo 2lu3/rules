@@ -42,7 +42,7 @@ applies_to: [all]
 
 - Prefer these skills over doing the work by hand:
 
-  - **Task registration / delivery** → `register`, `ship`, `close`, `land`
+  - **Task registration / implementation / delivery** → `flow p`, `flow d`, `flow c`, `flow a`
   - **Code review / refactor / security** → `/code-review`, `/simplify`, `/security-review`
   - **Web run / perf** → `run`, `/web-perf` (see Web Design & Debugging)
 

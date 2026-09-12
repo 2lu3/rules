@@ -116,13 +116,16 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                     self.target / '.agents/scripts/setup-worktree.sh', os.X_OK,
                 ))
                 self.assertEqual(
-                    (self.target / '.agents/skills/ship/SKILL.md').read_bytes(),
-                    (self.target / '.claude/skills/ship/SKILL.md').read_bytes(),
+                    (self.target / '.agents/skills/flow/SKILL.md').read_bytes(),
+                    (self.target / '.claude/skills/flow/SKILL.md').read_bytes(),
                 )
                 self.assertEqual(
-                    (self.target / '.agents/skills/ship/SKILL.md').read_bytes(),
-                    (self.target / '.codex/skills/ship/SKILL.md').read_bytes(),
+                    (self.target / '.agents/skills/flow/SKILL.md').read_bytes(),
+                    (self.target / '.codex/skills/flow/SKILL.md').read_bytes(),
                 )
+                self.assertFalse((self.target / '.agents/skills/register').exists())
+                self.assertFalse((self.target / '.agents/skills/ship').exists())
+                self.assertFalse((self.target / '.agents/skills/close').exists())
 
     def test_multiple_scopes(self):
         (self.source / '.agents/rules/shared.md').write_text(
