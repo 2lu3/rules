@@ -127,6 +127,26 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                 self.assertFalse((self.target / '.agents/skills/ship').exists())
                 self.assertFalse((self.target / '.agents/skills/close').exists())
 
+    def test_flow_do_requires_documentation_and_test_updates(self):
+        flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
+
+        self.assertIn(
+            'Always update the relevant documentation for the implementation.',
+            flow_skill,
+        )
+        self.assertIn(
+            'Always add or update tests for the implementation.',
+            flow_skill,
+        )
+        self.assertIn(
+            'merely running existing tests does not count as a test update.',
+            flow_skill,
+        )
+        self.assertIn(
+            'including the tests added or updated in step 7',
+            flow_skill,
+        )
+
     def test_multiple_scopes(self):
         (self.source / '.agents/rules/shared.md').write_text(
             '---\napplies_to: [research, prototype]\n---\n\n# Shared\n',
