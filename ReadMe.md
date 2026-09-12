@@ -75,6 +75,16 @@ task_tracker: linear
 不足している `p` / `d` / `c` を順番に補完します。
 対象タスクの状態更新とトラッカーの確認は、共通の[タスクの状態管理](.agents/rules/task-management.md)に従います。
 
+## PR作成とマージ
+
+- `flow p`: 設計してタスクを登録します。
+- `flow d`: 実装とローカル検証を行います。
+- `flow c`: 現在状態を確認し、必要なら `p` / `d` を補完してDraft PR作成まで進めます。
+- `flow a`: 現在状態を確認し、必要なら `p` / `d` / `c` を補完してPRをマージします。
+
+`flow c` はPR作成後に停止し、`flow a` はchecks・reviews・mergeabilityを確認してからmergeします。
+実装済みの変更をPR作成からマージまで進める依頼も、`flow a` 相当として扱います。
+
 ## worktree setup
 
 worktree作成時に利用するソフトから、次のスクリプトを自動実行してください。
