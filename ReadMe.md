@@ -73,6 +73,12 @@ task_tracker: linear
 タスクのステータス変更や closing reference の追加を行わずに、ユーザーが明示した範囲を処理します。
 `flow c` はDraft PR作成まで、`flow a` は対象PRのマージまでを行います。`flow a` は現在状態を認識し、
 不足している `p` / `d` / `c` を順番に補完します。
+
+権限の範囲は次のとおりです。
+
+- `flow c`: feature branchへのpushと、Draft PRの新規作成または更新を許可します。PRのマージは許可しません。
+- `flow a`: `flow c`の全権限に加えて、対象PRのマージを許可します。
+
 対象タスクの状態更新とトラッカーの確認は、共通の[タスクの状態管理](.agents/rules/task-management.md)に従います。
 
 ## PR作成とマージ

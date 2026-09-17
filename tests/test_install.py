@@ -147,6 +147,33 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
             flow_skill,
         )
 
+    def test_flow_delivery_permissions_are_explicit(self):
+        flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
+        git_rules = (ROOT / '.agents/rules/git.md').read_text()
+        readme = (ROOT / 'ReadMe.md').read_text()
+
+        for document in (flow_skill, git_rules, readme):
+            with self.subTest(document=document[:20]):
+                self.assertIn('push', document.lower())
+                self.assertIn('Draft PR', document)
+
+        self.assertIn(
+            '`flow c` authorizes pushing the feature branch and creating or updating one Draft PR.',
+            flow_skill,
+        )
+        self.assertIn(
+            '`flow a` includes all `flow c` permissions and additionally authorizes merging the target PR.',
+            flow_skill,
+        )
+        self.assertIn(
+            '`flow c`: feature branchへのpushと、Draft PRの新規作成または更新を許可します。PRのマージは許可しません。',
+            readme,
+        )
+        self.assertIn(
+            '`flow a`: `flow c`の全権限に加えて、対象PRのマージを許可します。',
+            readme,
+        )
+
     def test_flow_main_merge_has_safe_conflict_policy(self):
         flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
 
