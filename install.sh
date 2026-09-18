@@ -11,7 +11,7 @@ CLAUDE_SKILLS_RELATIVE_PATH=".claude/skills"
 CODEX_SKILLS_RELATIVE_PATH=".codex/skills"
 
 usage() {
-  printf 'Usage: install.sh --profile research|prototype|production\n'
+  printf 'Usage: install.sh [--profile research|prototype|production]\n'
 }
 
 if [ "$#" -eq 1 ] && { [ "$1" = "--help" ] || [ "$1" = "-h" ]; }; then
@@ -19,18 +19,22 @@ if [ "$#" -eq 1 ] && { [ "$1" = "--help" ] || [ "$1" = "-h" ]; }; then
   exit 0
 fi
 
-if [ "$#" -ne 2 ] || [ "$1" != "--profile" ]; then
+profile=""
+if [ "$#" -eq 0 ]; then
+  :
+elif [ "$#" -eq 2 ] && [ "$1" = "--profile" ]; then
+  profile="$2"
+  case "$profile" in
+    research|prototype|production) ;;
+    *)
+      printf 'rules install failed: unknown profile: %s\n' "$profile" >&2
+      exit 1
+      ;;
+  esac
+else
   usage >&2
   exit 1
 fi
-profile="$2"
-case "$profile" in
-  research|prototype|production) ;;
-  *)
-    printf 'rules install failed: unknown profile: %s\n' "$profile" >&2
-    exit 1
-    ;;
-esac
 
 # 実行に必要なコマンドを確認する
 if ! command -v git >/dev/null 2>&1; then
@@ -84,7 +88,7 @@ for rule_path in "$source_root"/.agents/rules/*.md; do
       for (i = 1; i <= count; i++) {
         scope = values[i]
         if (scope != "all" && scope != "research" && scope != "prototype" && scope != "production") exit 1
-        if (scope == "all" || scope == profile) selected = 1
+        if (scope == "all" || (profile != "" && scope == profile)) selected = 1
       }
     }
     END {
@@ -113,7 +117,11 @@ while IFS= read -r line || [ -n "$line" ]; do
   esac
   printf '%s\n' "$line"
 done < "$source_root/AGENTS.md" > "$selected_agents"
-printf '\n適用用途: `%s`。`all` と `%s` の文書をインストール済みです。\n' "$profile" "$profile" >> "$selected_agents"
+if [ -n "$profile" ]; then
+  printf '\n適用用途: `%s`。`all` と `%s` の文書をインストール済みです。\n' "$profile" "$profile" >> "$selected_agents"
+else
+  printf '\n適用用途: 指定なし。`all` の文書をインストール済みです。\n' >> "$selected_agents"
+fi
 mv "$selected_agents" "$source_root/AGENTS.md"
 rm -rf "$source_root/.agents/rules"
 mv "$selected_rules" "$source_root/.agents/rules"
@@ -156,4 +164,8 @@ if ! pre-commit install --install-hooks; then
 fi
 
 # 導入結果を表示する
-printf 'rules installed in %s (profile: %s)\n' "$repo_root" "$profile"
+if [ -n "$profile" ]; then
+  printf 'rules installed in %s (profile: %s)\n' "$repo_root" "$profile"
+else
+  printf 'rules installed in %s (profile: none)\n' "$repo_root"
+fi

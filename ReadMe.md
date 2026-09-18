@@ -16,11 +16,15 @@ Cursor、Claude Code、Codex向けの共通ルールとセットアップです�
 対象リポジトリのルートで実行します。`git`と`pre-commit`は事前にインストールしてください。
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh -s -- --profile [research / prototype / production]
+# 共通ルールのみを導入
+curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh
+
+# 用途別ルールを追加する場合
+curl -fsSL https://raw.githubusercontent.com/2lu3/rules/main/install.sh | sh -s -- --profile research
 ```
 
 `-h` / `--help` で使い方を表示します。
-`--profile` は必須で、`research`（研究）、`prototype`（試作）、`production`（本番運用）から選びます。
+`--profile` は任意で、指定する場合は `research`（研究）、`prototype`（試作）、`production`（本番運用）から選びます。指定しなければ、用途別文書は使わず `all` の文書だけを導入します。
 `install.sh` は `all` と指定用途の文書を選択し、`AGENTS.md` のリンクを揃え、pre-commit の Git hook を登録します。
 `all` は全用途共通の文書を示す metadata で、インストール用途としては指定しません。
 

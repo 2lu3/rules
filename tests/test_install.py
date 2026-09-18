@@ -127,6 +127,27 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                 self.assertFalse((self.target / '.agents/skills/ship').exists())
                 self.assertFalse((self.target / '.agents/skills/close').exists())
 
+    def test_without_profile_installs_common_rules_only(self):
+        common = {
+            p.name for p in (self.source / '.agents/rules').glob('*.md')
+        } - set(PROFILE_FILES.values())
+
+        result = self.install()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('profile: none', result.stdout)
+        self.assertEqual(
+            {
+                p.name for p in (self.target / '.agents/rules').glob('*.md')
+            },
+            common,
+        )
+        agents = (self.target / 'AGENTS.md').read_text()
+        self.assertIn('適用用途: 指定なし。`all` の文書をインストール済みです。', agents)
+        for rule in PROFILE_FILES.values():
+            self.assertNotIn(f'(.agents/rules/{rule})', agents)
+        self.assert_links_exist()
+
     def test_flow_do_requires_documentation_and_test_updates(self):
         flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
 
@@ -213,9 +234,10 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
         )
         with (self.source / 'AGENTS.md').open('a') as file:
             file.write('- [Shared](.agents/rules/shared.md): Shared rules\n')
-        for profile in PROFILE_FILES:
+        for profile in (None, *PROFILE_FILES):
             with self.subTest(profile=profile):
-                result = self.install('--profile', profile)
+                args = () if profile is None else ('--profile', profile)
+                result = self.install(*args)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(
                     (self.target / '.agents/rules/shared.md').exists(),
@@ -247,7 +269,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
     def test_arguments_are_validated_before_installation(self):
         before = self.snapshot()
         for args in (
-            (), ('--profile',), ('--profile', 'all'),
+            ('--profile',), ('--profile', 'all'),
             ('--profile', 'unknown'), ('--other', 'research'),
             ('--profile', 'production', 'extra'),
         ):
@@ -258,7 +280,10 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
             with self.subTest(option=option):
                 result = self.install(option)
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertIn('--profile research|prototype|production', result.stdout)
+                self.assertIn(
+                    'Usage: install.sh [--profile research|prototype|production]',
+                    result.stdout,
+                )
                 self.assertEqual(self.snapshot(), before)
 
 
