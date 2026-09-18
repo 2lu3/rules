@@ -25,7 +25,7 @@ class InstallTest(unittest.TestCase):
         self.source.mkdir()
         for name in (
             'AGENTS.md', '.pre-commit-config.yaml', '.github',
-            'scripts', '.agents', 'docs',
+            '.agents',
         ):
             original = ROOT / name
             if original.is_dir():
@@ -86,12 +86,12 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
         agents = (self.target / 'AGENTS.md').read_text()
         for link in re.findall(r'\]\(([^)]+)\)', agents):
             self.assertTrue((self.target / link).is_file(), link)
-        for rule in (self.target / 'docs/agents').glob('*.md'):
-            self.assertIn(f'(docs/agents/{rule.name})', agents)
+        for rule in (self.target / '.agents/rules').glob('*.md'):
+            self.assertIn(f'(.agents/rules/{rule.name})', agents)
 
     def test_profiles_and_switching(self):
         common = {
-            p.name for p in (self.source / 'docs/agents').glob('*.md')
+            p.name for p in (self.source / '.agents/rules').glob('*.md')
         } - set(PROFILE_FILES.values())
         for profile, rule in PROFILE_FILES.items():
             with self.subTest(profile=profile):
@@ -99,7 +99,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertIn(f'profile: {profile}', result.stdout)
                 installed = {
-                    p.name for p in (self.target / 'docs/agents').glob('*.md')
+                    p.name for p in (self.target / '.agents/rules').glob('*.md')
                 }
                 self.assertEqual(installed, common | {rule})
                 self.assert_links_exist()
@@ -113,25 +113,135 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
                 )
                 self.assertTrue((self.target / 'hook-installed').exists())
                 self.assertTrue(os.access(
-                    self.target / 'scripts/setup-worktree.sh', os.X_OK,
+                    self.target / '.agents/scripts/setup-worktree.sh', os.X_OK,
                 ))
                 self.assertEqual(
-                    (self.target / '.agents/skills/ship/SKILL.md').read_bytes(),
-                    (self.target / '.claude/skills/ship/SKILL.md').read_bytes(),
+                    (self.target / '.agents/skills/flow/SKILL.md').read_bytes(),
+                    (self.target / '.claude/skills/flow/SKILL.md').read_bytes(),
                 )
+                self.assertEqual(
+                    (self.target / '.agents/skills/flow/SKILL.md').read_bytes(),
+                    (self.target / '.codex/skills/flow/SKILL.md').read_bytes(),
+                )
+                self.assertFalse((self.target / '.agents/skills/register').exists())
+                self.assertFalse((self.target / '.agents/skills/ship').exists())
+                self.assertFalse((self.target / '.agents/skills/close').exists())
+
+    def test_without_profile_installs_common_rules_only(self):
+        common = {
+            p.name for p in (self.source / '.agents/rules').glob('*.md')
+        } - set(PROFILE_FILES.values())
+
+        result = self.install()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('profile: none', result.stdout)
+        self.assertEqual(
+            {
+                p.name for p in (self.target / '.agents/rules').glob('*.md')
+            },
+            common,
+        )
+        agents = (self.target / 'AGENTS.md').read_text()
+        self.assertIn('適用用途: 指定なし。`all` の文書をインストール済みです。', agents)
+        for rule in PROFILE_FILES.values():
+            self.assertNotIn(f'(.agents/rules/{rule})', agents)
+        self.assert_links_exist()
+
+    def test_flow_do_requires_documentation_and_test_updates(self):
+        flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
+
+        self.assertIn(
+            'Always update the relevant documentation for the implementation.',
+            flow_skill,
+        )
+        self.assertIn(
+            'Always add or update tests for the implementation.',
+            flow_skill,
+        )
+        self.assertIn(
+            'merely running existing tests does not count as a test update.',
+            flow_skill,
+        )
+        self.assertIn(
+            'including the tests added or updated in step 7',
+            flow_skill,
+        )
+
+    def test_flow_delivery_permissions_are_explicit(self):
+        flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
+        git_rules = (ROOT / '.agents/rules/git.md').read_text()
+        readme = (ROOT / 'ReadMe.md').read_text()
+
+        for document in (flow_skill, git_rules, readme):
+            with self.subTest(document=document[:20]):
+                self.assertIn('push', document.lower())
+                self.assertIn('non-draft PR', document)
+
+        self.assertIn(
+            '`flow c` authorizes pushing the feature branch and creating or updating one non-draft PR.',
+            flow_skill,
+        )
+        self.assertIn('`draft: false`', flow_skill)
+        self.assertIn(
+            '`flow a` includes all `flow c` permissions and additionally authorizes merging the target PR.',
+            flow_skill,
+        )
+        self.assertIn(
+            '`flow c`: feature branchへのpushと、non-draft PRの新規作成または更新を許可します。PRのマージは許可しません。',
+            readme,
+        )
+        self.assertIn(
+            '`flow a`: `flow c`の全権限に加えて、対象PRのマージを許可します。',
+            readme,
+        )
+
+    def test_flow_main_merge_has_safe_conflict_policy(self):
+        flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
+
+        for requirement in (
+            '### Main-merge conflict policy',
+            'git diff --name-only --diff-filter=U',
+            'stage 1 (merge base), stage 2 (ours), and stage 3 (theirs)',
+            'stage 2 is exactly equal to stage 1',
+            'stage 3 is exactly equal to stage 1',
+            'stage 2 and stage 3 are byte-for-byte identical',
+            'git ls-files -u -- <path>',
+            'git add -- <path>',
+            'recover both sides\' intent before editing',
+            'If the intents are compatible',
+            'preserves both intents',
+            'relevant commits, surrounding code or documentation, and affected tests',
+            'every conflict hunk has an explainable intent-level resolution',
+            'reconcile the source and regenerate them',
+            'git diff --cached --check',
+            'GIT_EDITOR=true git merge --continue',
+            'leave the merge in progress',
+            'request human review',
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, flow_skill)
+
+        for forbidden in (
+            'git merge -X ours/theirs',
+            'git checkout --ours/--theirs .',
+        ):
+            with self.subTest(forbidden=forbidden):
+                self.assertIn(forbidden, flow_skill)
 
     def test_multiple_scopes(self):
-        (self.source / 'docs/agents/shared.md').write_text(
+        (self.source / '.agents/rules/shared.md').write_text(
             '---\napplies_to: [research, prototype]\n---\n\n# Shared\n',
         )
         with (self.source / 'AGENTS.md').open('a') as file:
-            file.write('- [Shared](docs/agents/shared.md): Shared rules\n')
-        for profile in PROFILE_FILES:
+            file.write('- [Shared](.agents/rules/shared.md): Shared rules\n')
+        for profile in (None, *PROFILE_FILES):
             with self.subTest(profile=profile):
-                result = self.install('--profile', profile)
+                args = () if profile is None else ('--profile', profile)
+                result = self.install(*args)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(
-                    (self.target / 'docs/agents/shared.md').exists(),
+                    (self.target / '.agents/rules/shared.md').exists(),
                     profile in ('research', 'prototype'),
                 )
                 self.assert_links_exist()
@@ -151,7 +261,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
             '---\napplies_to: ["research"]\n---\n',
         ):
             with self.subTest(metadata=metadata):
-                (self.source / 'docs/agents/prototype-code.md').write_text(metadata)
+                (self.source / '.agents/rules/prototype-code.md').write_text(metadata)
                 result = self.install('--profile', 'research')
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn('invalid applies_to frontmatter', result.stderr)
@@ -160,7 +270,7 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
     def test_arguments_are_validated_before_installation(self):
         before = self.snapshot()
         for args in (
-            (), ('--profile',), ('--profile', 'all'),
+            ('--profile',), ('--profile', 'all'),
             ('--profile', 'unknown'), ('--other', 'research'),
             ('--profile', 'production', 'extra'),
         ):
@@ -171,7 +281,10 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
             with self.subTest(option=option):
                 result = self.install(option)
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertIn('--profile research|prototype|production', result.stdout)
+                self.assertIn(
+                    'Usage: install.sh [--profile research|prototype|production]',
+                    result.stdout,
+                )
                 self.assertEqual(self.snapshot(), before)
 
 

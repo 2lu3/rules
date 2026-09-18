@@ -5,12 +5,13 @@ set -eu
 # 配布元、対象パスを定義する
 RULES_REPO_URL="https://github.com/2lu3/rules.git"
 RULES_REF="main"
-INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml scripts/setup-worktree.sh .agents/skills docs/agents"
+INSTALLATION_PATHS="AGENTS.md .pre-commit-config.yaml .github/workflows/ci.yml .agents/scripts .agents/skills .agents/rules"
 SKILLS_RELATIVE_PATH=".agents/skills"
 CLAUDE_SKILLS_RELATIVE_PATH=".claude/skills"
+CODEX_SKILLS_RELATIVE_PATH=".codex/skills"
 
 usage() {
-  printf 'Usage: install.sh --profile research|prototype|production\n'
+  printf 'Usage: install.sh [--profile research|prototype|production]\n'
 }
 
 if [ "$#" -eq 1 ] && { [ "$1" = "--help" ] || [ "$1" = "-h" ]; }; then
@@ -18,18 +19,22 @@ if [ "$#" -eq 1 ] && { [ "$1" = "--help" ] || [ "$1" = "-h" ]; }; then
   exit 0
 fi
 
-if [ "$#" -ne 2 ] || [ "$1" != "--profile" ]; then
+profile=""
+if [ "$#" -eq 0 ]; then
+  :
+elif [ "$#" -eq 2 ] && [ "$1" = "--profile" ]; then
+  profile="$2"
+  case "$profile" in
+    research|prototype|production) ;;
+    *)
+      printf 'rules install failed: unknown profile: %s\n' "$profile" >&2
+      exit 1
+      ;;
+  esac
+else
   usage >&2
   exit 1
 fi
-profile="$2"
-case "$profile" in
-  research|prototype|production) ;;
-  *)
-    printf 'rules install failed: unknown profile: %s\n' "$profile" >&2
-    exit 1
-    ;;
-esac
 
 # 実行に必要なコマンドを確認する
 if ! command -v git >/dev/null 2>&1; then
@@ -67,7 +72,7 @@ fi
 # 配置前に全 metadata を検証し、選択結果を一時領域で組み立てる。
 selected_rules="$tmp_dir/selected-rules"
 mkdir -p "$selected_rules"
-for rule_path in "$source_root"/docs/agents/*.md; do
+for rule_path in "$source_root"/.agents/rules/*.md; do
   if ! selected="$(awk -v profile="$profile" '
     NR == 1 {
       if ($0 != "---") exit 1
@@ -83,7 +88,7 @@ for rule_path in "$source_root"/docs/agents/*.md; do
       for (i = 1; i <= count; i++) {
         scope = values[i]
         if (scope != "all" && scope != "research" && scope != "prototype" && scope != "production") exit 1
-        if (scope == "all" || scope == profile) selected = 1
+        if (scope == "all" || (profile != "" && scope == profile)) selected = 1
       }
     }
     END {
@@ -102,8 +107,8 @@ done
 selected_agents="$tmp_dir/AGENTS.md"
 while IFS= read -r line || [ -n "$line" ]; do
   case "$line" in
-    '- ['*'](docs/agents/'*')'*)
-      rule_name="${line#*](docs/agents/}"
+    '- ['*'](.agents/rules/'*')'*)
+      rule_name="${line#*](.agents/rules/}"
       rule_name="${rule_name%%)*}"
       if [ ! -f "$selected_rules/$rule_name" ]; then
         continue
@@ -112,10 +117,14 @@ while IFS= read -r line || [ -n "$line" ]; do
   esac
   printf '%s\n' "$line"
 done < "$source_root/AGENTS.md" > "$selected_agents"
-printf '\n適用用途: `%s`。`all` と `%s` の文書をインストール済みです。\n' "$profile" "$profile" >> "$selected_agents"
+if [ -n "$profile" ]; then
+  printf '\n適用用途: `%s`。`all` と `%s` の文書をインストール済みです。\n' "$profile" "$profile" >> "$selected_agents"
+else
+  printf '\n適用用途: 指定なし。`all` の文書をインストール済みです。\n' >> "$selected_agents"
+fi
 mv "$selected_agents" "$source_root/AGENTS.md"
-rm -rf "$source_root/docs/agents"
-mv "$selected_rules" "$source_root/docs/agents"
+rm -rf "$source_root/.agents/rules"
+mv "$selected_rules" "$source_root/.agents/rules"
 
 # 配布元の1パスを対象リポジトリへ同期する(既存の内容は置き換える)
 sync_path() {
@@ -138,13 +147,15 @@ for relative_path in $INSTALLATION_PATHS; do
   sync_path "$relative_path"
 done
 
-# Claude Code は .claude/skills/ しか参照しないため、.agents/skills/ を実体コピーで橋渡しする
-mkdir -p "$(dirname "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH")"
-rm -rf "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH"
-cp -r "$repo_root/$SKILLS_RELATIVE_PATH" "$repo_root/$CLAUDE_SKILLS_RELATIVE_PATH"
+# 各エージェントツールが参照するスキルディレクトリへ実体コピーで橋渡しする
+for target_skills_path in "$CLAUDE_SKILLS_RELATIVE_PATH" "$CODEX_SKILLS_RELATIVE_PATH"; do
+  mkdir -p "$(dirname "$repo_root/$target_skills_path")"
+  rm -rf "$repo_root/$target_skills_path"
+  cp -r "$repo_root/$SKILLS_RELATIVE_PATH" "$repo_root/$target_skills_path"
+done
 
 # worktree セットアップスクリプトに実行権限を付与する
-chmod 0755 scripts/setup-worktree.sh
+chmod 0755 .agents/scripts/setup-worktree.sh
 
 # リポジトリの共有 Git hook に pre-commit を登録する
 if ! pre-commit install --install-hooks; then
@@ -153,4 +164,8 @@ if ! pre-commit install --install-hooks; then
 fi
 
 # 導入結果を表示する
-printf 'rules installed in %s (profile: %s)\n' "$repo_root" "$profile"
+if [ -n "$profile" ]; then
+  printf 'rules installed in %s (profile: %s)\n' "$repo_root" "$profile"
+else
+  printf 'rules installed in %s (profile: none)\n' "$repo_root"
+fi
