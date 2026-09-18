@@ -9,14 +9,14 @@ description: Use when the user explicitly invokes the repository lifecycle as `f
 
 - `flow p` / `flow plan`: plan the work and register the task.
 - `flow d` / `flow do`: implement the work.
-- `flow c` / `flow check`: finish implementation, validate it, and create or update a Draft PR.
+- `flow c` / `flow check`: finish implementation, validate it, and create or update a non-draft PR.
 - `flow a` / `flow auto`: resume from the current state and complete the whole lifecycle through PR merge.
 
 There is no `flow m` phase. `flow a` owns PR merge.
 
 Permission summary:
 
-- `flow c` authorizes pushing the feature branch and creating or updating one Draft PR. It does not authorize merging a PR.
+- `flow c` authorizes pushing the feature branch and creating or updating one non-draft PR. It does not authorize merging a PR.
 - `flow a` includes all `flow c` permissions and additionally authorizes merging the target PR.
 
 `flow c` and `flow a` are resumable endpoint commands. Before changing anything, identify the current state and print the phases that will run. Do not rerun completed work unnecessarily, and do not infer a task from a branch name.
@@ -27,8 +27,8 @@ An explicit phase invocation authorizes only the operations in that phase and an
 
 - `p` authorizes task registration, but not implementation or Git delivery.
 - `d` authorizes implementation and local validation, but not commit, push, PR creation, or PR merge.
-- `c` authorizes the `p`/`d` prerequisites when needed, commit, merging the latest `origin/main` into the feature branch, pushing the feature branch, and creating or updating one Draft PR. It NEVER authorizes merging a PR.
-- `a` authorizes all required `p`/`d`/`c` work, including `c`'s push and Draft PR creation/update permissions, and PR merge. It is the only phase that merges a PR.
+- `c` authorizes the `p`/`d` prerequisites when needed, commit, merging the latest `origin/main` into the feature branch, pushing the feature branch, and creating or updating one non-draft PR. It NEVER authorizes merging a PR.
+- `a` authorizes all required `p`/`d`/`c` work, including `c`'s push and non-draft PR creation/update permissions, and PR merge. It is the only phase that merges a PR.
 
 Never run the entire lifecycle for a bare `flow` request. Report the valid phases and stop. If a phase is invalid or ambiguous, stop before mutation.
 
@@ -54,7 +54,7 @@ The endpoint behavior is:
 | --- | --- |
 | `flow p` | task registered |
 | `flow d` | implementation and local validation complete |
-| `flow c` | validated Draft PR created or updated |
+| `flow c` | validated non-draft PR created or updated |
 | `flow a` | PR merged and task completion verified |
 
 If there is no target task, output `タスクが明記されていません。`, skip tracker mutations, task metadata, and closing references, and continue only with the user's explicit scope. Do not invent a task. For `flow p`, a task tracker declaration is still required before registration.
@@ -88,13 +88,13 @@ Do not commit, push, create/update a PR, or merge during `d`. A successful `d` l
 
 ## `flow c` / `flow check`
 
-Reach the reviewable Draft PR endpoint. Run any missing `p` and `d` prerequisites first, then:
+Reach the reviewable non-draft PR endpoint. Run any missing `p` and `d` prerequisites first, then:
 
 1. Run the relevant validation and stop on validation failures that are not an expected natural downstream failure.
 2. Selectively stage the files belonging to this work. Use a commit message beginning with `feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`. Never bypass pre-commit hooks.
 3. Fetch the latest `origin/main` and merge it into the feature branch. Never rebase. Follow the [main-merge conflict policy](#main-merge-conflict-policy); resolve mechanically safe or semantically compatible conflicts and stop for human review when the intent is unclear, incompatible, or not verifiable.
 4. Push the feature branch. Never force-push.
-5. Query open PRs with `gh api`. Update the one identified PR for the current branch, or create exactly one new PR with `draft: true`. If an existing matching PR is not a draft, convert it to a draft through the GitHub GraphQL `convertPullRequestToDraft` mutation before updating it.
+5. Query open PRs with `gh api`. Update the one identified PR for the current branch, or create exactly one new PR with `draft: false`. If an existing matching PR is a draft, mark it ready for review through the GitHub GraphQL `markPullRequestReadyForReview` mutation before updating it.
 6. Write the PR title and body in Japanese. The body must contain, in order, `# Summary`, `# Items to Confirm / Review`, and `# User Prompt`. Include the implementation approach, validation, and key decisions. Reuse the registered task's `# User Prompt` when one exists. A tracked task's closing reference belongs at the very end; omit it in no-task mode.
 7. After the PR is created or updated successfully, move the tracked task to the tracker's In Review equivalent and verify it. Do not change task metadata beyond the status transition.
 

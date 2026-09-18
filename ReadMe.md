@@ -75,12 +75,12 @@ task_tracker: linear
 
 `flow` の呼び出しにタスクが明記されていない場合は、`タスクが明記されていません。` と出力し、
 タスクのステータス変更や closing reference の追加を行わずに、ユーザーが明示した範囲を処理します。
-`flow c` はDraft PR作成まで、`flow a` は対象PRのマージまでを行います。`flow a` は現在状態を認識し、
+`flow c` はnon-draft PR作成まで、`flow a` は対象PRのマージまでを行います。`flow a` は現在状態を認識し、
 不足している `p` / `d` / `c` を順番に補完します。
 
 権限の範囲は次のとおりです。
 
-- `flow c`: feature branchへのpushと、Draft PRの新規作成または更新を許可します。PRのマージは許可しません。
+- `flow c`: feature branchへのpushと、non-draft PRの新規作成または更新を許可します。PRのマージは許可しません。
 - `flow a`: `flow c`の全権限に加えて、対象PRのマージを許可します。
 
 対象タスクの状態更新とトラッカーの確認は、共通の[タスクの状態管理](.agents/rules/task-management.md)に従います。
@@ -89,7 +89,7 @@ task_tracker: linear
 
 - `flow p`: 設計してタスクを登録します。
 - `flow d`: 実装とローカル検証を行います。
-- `flow c`: 現在状態を確認し、必要なら `p` / `d` を補完してDraft PR作成まで進めます。
+- `flow c`: 現在状態を確認し、必要なら `p` / `d` を補完してnon-draft PR作成まで進めます。
 - `flow a`: 現在状態を確認し、必要なら `p` / `d` / `c` を補完してPRをマージします。
 
 `flow c` はPR作成後に停止し、`flow a` はchecks・reviews・mergeabilityを確認してからmergeします。

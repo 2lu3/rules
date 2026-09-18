@@ -176,18 +176,19 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
         for document in (flow_skill, git_rules, readme):
             with self.subTest(document=document[:20]):
                 self.assertIn('push', document.lower())
-                self.assertIn('Draft PR', document)
+                self.assertIn('non-draft PR', document)
 
         self.assertIn(
-            '`flow c` authorizes pushing the feature branch and creating or updating one Draft PR.',
+            '`flow c` authorizes pushing the feature branch and creating or updating one non-draft PR.',
             flow_skill,
         )
+        self.assertIn('`draft: false`', flow_skill)
         self.assertIn(
             '`flow a` includes all `flow c` permissions and additionally authorizes merging the target PR.',
             flow_skill,
         )
         self.assertIn(
-            '`flow c`: feature branchへのpushと、Draft PRの新規作成または更新を許可します。PRのマージは許可しません。',
+            '`flow c`: feature branchへのpushと、non-draft PRの新規作成または更新を許可します。PRのマージは許可しません。',
             readme,
         )
         self.assertIn(

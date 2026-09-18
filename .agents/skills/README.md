@@ -10,7 +10,7 @@
 .agents/skills/<skill-name>/SKILL.md
 ```
 
-現在は、計画・実装・Draft PR作成・mergeまでを扱う `flow` スキルを配布しています。
+現在は、計画・実装・non-draft PR作成・mergeまでを扱う `flow` スキルを配布しています。
 
 ## 配布の仕組み
 
