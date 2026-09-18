@@ -29,7 +29,7 @@ MUST run the following steps in order.
 5. **Create the PR**
    - MUST confirm the correct default or target branch before creating the PR.
    - MUST check for an existing PR for the branch through `gh api` before creating or updating one.
-   - If no open PR exists, MUST create one through `gh api`, using the confirmed target branch and a body file. For example: `gh api repos/{owner}/{repo}/pulls -F title='...' -F head='{branch}' -F base='{base}' -F 'body=@pr-body.md'`.
+   - If no open PR exists, MUST create one through `gh api` with `draft=false`, using the confirmed target branch and a body file. For example: `gh api repos/{owner}/{repo}/pulls -F title='...' -F head='{branch}' -F base='{base}' -F draft=false -F 'body=@pr-body.md'`.
    - If an open PR exists, MUST update that PR through `gh api`; NEVER create a second PR for the same branch. For example: `gh api --method PATCH repos/{owner}/{repo}/pulls/{pull_number} -F title='...' -F 'body=@pr-body.md'`.
    - Use a quoted heredoc or equivalent file-based method to create the body so Markdown backticks and shell characters are not expanded.
    - MUST report the commit, branch, PR URL, validation, and pending checks.
