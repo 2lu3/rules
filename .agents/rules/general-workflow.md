@@ -29,7 +29,8 @@ applies_to: [all]
 
 ## Work Recap
 
-- After finishing work, MUST briefly explain what was done in the final response using bullet points
+- After finishing work, MUST include a work recap in the final response as at most three bullet points, ordered from highest to lowest importance
+- Each recap item MUST concretely state the changed target and the work performed; NEVER use only vague labels such as "updated settings" or "handled it"
 
 ## Debugging Approach
 
