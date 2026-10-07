@@ -168,6 +168,16 @@ Path(os.environ['TEST_TARGET'], 'hook-installed').touch()
             flow_skill,
         )
 
+    def test_work_recap_is_concrete_and_prioritized(self):
+        general_rules = (ROOT / '.agents/rules/general-workflow.md').read_text()
+
+        self.assertIn('at most three bullet points', general_rules)
+        self.assertIn('ordered from highest to lowest importance', general_rules)
+        self.assertIn(
+            'MUST concretely state the changed target and the work performed',
+            general_rules,
+        )
+
     def test_flow_delivery_permissions_are_explicit(self):
         flow_skill = (ROOT / '.agents/skills/flow/SKILL.md').read_text()
         git_rules = (ROOT / '.agents/rules/git.md').read_text()
